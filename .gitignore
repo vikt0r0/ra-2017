@@ -1,0 +1,16 @@
+.DS_store
+
+assignments/*/*.pdf
+assignments/*/*.fdb_latexmk
+assignments/*/*.fls
+
+
+
+*.log
+*.aux
+*.out
+*.synctex.gz
+
+*~
+
+code/.idea
