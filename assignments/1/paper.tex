@@ -12,6 +12,7 @@
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{tikz}
+\usepackage[]{algorithm2e}
 \usepackage{parskip} 			   % no paragraph indentation
 
 \usetikzlibrary{arrows,automata}
@@ -50,213 +51,53 @@
 \nocite{*}
 
 
-\title{Assignment 2}
+\title{Randomized Algorithms \\
+       Assignment 1}
 
-\author{Viktor Hansen, Asger Andersen \\ 
-Department of Computer Science \\
-University of Copenhagen}
+\author{Viktor Hansen, Simon Schleicher}
 
 \maketitle
 
 \begin{abstract}
-  This is the second weekly assignment for the Computability and Complexity course offered at The Department of Computer Science, Uni. Copenhagen.
+  This is the first weekly assignment for the Randomized Algorithms course offered at The Department of Computer Science, Uni. Copenhagen.
 \end{abstract}
 
 \pagebreak
 
-\section*{2.6b}
-The complement of the language is $\left\{ w \; | \; w \in \left\{ a, b \right\}^* \right\} \setminus \left\{ a^nb^n \; | \; n \geq 0 \right\}$. Hence strings in the language $\left\{ \; a^nb^m \; | \; n,m \geq 0, n \neq m \right\} \subset \left\{ a^nb^m \; | \; n,m \geq 0 \right\}$ are in the complement while strings in $\left\{ \; a^nb^n \; | \; n \geq 0 \right\} \subset \left\{ a^nb^m \; | \; n,m \geq 0 \right\}$ are not, which needs to be reflected in the grammar:
-\begin{equation*}
-	\begin{split}
-S &\longrightarrow aSb \; | \; aA \; | \; bB\\
-A &\longrightarrow aA \; | \; \varepsilon \; | \; baD
-	\end{split}
-\quad\quad
-	\begin{split}
-B &\longrightarrow Bb \; | \; \varepsilon \; | \; aD\\
-D &\longrightarrow aD \; | \; bD \; | \; \varepsilon
-	\end{split}
-\end{equation*}
-We observe that at any given point a $b$ is followed by an $a$ in a derivation, the string remains in the complement, but not in $\left\{ a^nb^m \; | \; n,m \geq 0 \right\}$, regardless of any further derivation. This is captured in productions $A \rightarrow baD$ and $B \rightarrow aD$. The productions for $S$ enforce the requirement that no string in $\left\{ \; a^nb^n \; | \; n \geq 0 \right\}$ are in the complement. This is done by 'pumping' a string of the form $a \hdots a S b \hdots b$ and only allowing $S$ to become either $a$s, $b$s or a mix of either in which it is guaranteed that a $b$ is followed by an $a$ (productions $A \rightarrow baD$ and $B \rightarrow aD$). The production for $D$ derives strings in $\left\{a,b\right\}^{*}$, which is any string consisting solely of $a$s and $b$s.
+\section*{Exercise 1.2}
+Consider the graph $G=(E,V)$ consisting of two $(\left|V\right|/2)$-cliques, $L$ and $R$, connected by a single edge. The min-cut of $G$ has size 1. If at any point, the algorithm coalesces any pair of vertices that are not both from $L$ or $R$, respectively, the size of the min-cut increases in the resulting graph, and it can not be found in subsequent iterations.
 
-\section*{2.6d}
-The following grammar recognizes the language:
-\begin{equation*}
-	\begin{split}
-F &\longrightarrow LPR
-	\end{split}
-\quad\quad
-	\begin{split}
-L &\longrightarrow LQ\# \; | \; \varepsilon \\
-R &\longrightarrow \#QR \; | \; \varepsilon\\
-Q &\longrightarrow aQ \; | \; bQ \; | \; \varepsilon
-	\end{split}
-\quad\quad
-	\begin{split}
-P &\longrightarrow aPa \; | \; bPb \; | \; P'\\
-P' &\longrightarrow \#S\# \; | \; \# \; | \; a \; | \; b \; | \; \varepsilon\\
-S &\longrightarrow Q \; | \; Q \# S \\
-	\end{split}
-\end{equation*}
+\section*{Exercise 1.3}
+To obtain a Las Vegas algorithm from $A$, we run $A$ on $\Pi$ and verify the solution in time $T(n) + t(n)$. We repeat this process until the correct answer is given by $A$. Let $N$ be the random variable denoting the number of times $A$ must be run on $\Pi$ to obtain the correct answer. Then the expected running time of the Las Vegas algorithm is given by $\mathbf{E}\left[ \left(T(n) + t(n)\right) \cdot N \right] = \left(T(n) + t(n)\right) \cdot \mathbf{E} \left[ N \right] = \left(T(n) + t(n)\right) \cdot 1/\gamma{(n)}$ since $N$ follows a geometric distribution with parameter $\gamma{(n)}$.
 
-The production for $Q$ recognizes the language $\left\{ a, b \right\}^*$, i.e. each substring $x_i$. The language requires that for some $i,j$, $x_i=x_j^{\mathcal{R}}$. In case that $i=j$, $x_i=x_j=x_i^{\mathcal{R}}$ is a palindrome, which is captured by the productions for $P$ and $P' \rightarrow a \; | \; b \; | \; \varepsilon$. When $x_{j}=x_{i+l}^{\mathcal{R}}$ for some integer $l \neq 0$, a string in the language $s = \left\{ \; \# x_1 \# x_2 \# \hdots \# x_k \# \; | \; k \geq 1,\text{ each  } x_i \in \left\{ a, b \right\}^* \; \right\}$ exists between $x_i$ and $x_j$, i.e. $x_{i} s x_{j}$, which is captured by the production $P' \rightarrow \#S\#$ and those for $S$. The productions for $L$ (and accordingly for $R$) optionally 'pad' the language with strings in the language $\left\{ \; x_1 \# x_2 \# \hdots \# x_k \# \; | \; k \geq 0,\text{ each  } x_i \in \left\{ a, b \right\}^* \; \right\}$ (and accordingly for $R$), allowing for $i$ and $j$ to be different from $1$ and $k$. The start production $F \rightarrow LPR$ yields the optional left 'padding', $L$, followed by the palindrome/reversed string part, followed by optional right 'padding'.
+\section*{Problem 1.1}
+\paragraph{a)} For $k \geq 1$, let $s \in \left\{ H,T \right\}^k$ denote a $k$-coin toss sequence, s.t., for instance, $HT$ is a 2-coin toss sequence in which the first toss is a heads and the second is a tails. Then $HT$ and $TH$ can be viewed as the events heads and tails for a fair coin, respectively, since they are equiprobable, i.e. $\textbf{Pr}\left[ HT \right] = \textbf{Pr}\left[ TH \right] = p(1-p)=(1-p)p$. Let $N$ be the random variable denoting the number of independent 2-coin sequences needed to get either $HT$ or $TH$. Then $N$ follows a geometric distribution with parameter $p(1-p) + (1-p)p = 2p(1-p)$ since the events are independent, and $\mathbf{E}\left[ N \right] = 1/2p(1-p)$ which is no more than $1/p(1-p)$.
 
-\section*{2.14}
-First, the start symbol $S$ and its production is added to the grammar:
-\begin{equation*}
-	\begin{split}
-		A &\rightarrow BAB \; | \; B \; | \; \varepsilon\\
-		B &\rightarrow 00 \; | \; \varepsilon
-	\end{split}
-\quad\longrightarrow\quad
-	\begin{split}
-		\mathbf{S} &\rightarrow \mathbf{A}\\
-    	A &\rightarrow BAB \; | \; B \; | \; \varepsilon\\
-		B &\rightarrow 00 \; | \; \varepsilon
-    \end{split}
-\end{equation*}
-Next, the $B \rightarrow \varepsilon$ and $A \rightarrow \varepsilon$ productions are eliminated, yielding:
-\begin{equation*}
-	\begin{split}
-		S &\rightarrow A\\
-    	A &\rightarrow BAB \; | \; B \; | \; \bm{\varepsilon}\\
-		B &\rightarrow 00 \; | \; \bm{\varepsilon}
-    \end{split}
-\quad\longrightarrow\quad
-	\begin{split}
-		S &\rightarrow A \; | \; \bm{\varepsilon}\\
-    	A &\rightarrow BAB \; | \; B \; | \; \mathbf{AB} \; | \; \mathbf{BA} \; | \; \mathbf{A} \; | \; \mathbf{BB}\\
-		B &\rightarrow 00
-    \end{split}
-\end{equation*}
-Now, unit rules $S \rightarrow A$, $A \rightarrow B$ and $A \rightarrow A$ are removed:
-\begin{equation*}
-	\begin{split}
-		S &\rightarrow \mathbf{A} \; | \; \varepsilon\\
-    	A &\rightarrow BAB \; | \; \mathbf{B} \; | \; AB \; | \; BA \; | \; \mathbf{A} \; | \; BB\\
-		B &\rightarrow 00
-    \end{split}
-\quad\longrightarrow\quad
-	\begin{split}
-		S &\rightarrow \mathbf{BAB \; | \; 00 \; | \; AB \; | \; BA \; | \; BB \; | \; \varepsilon}\\
-    	A &\rightarrow BAB \; | \; \mathbf{00} \; | \; AB \; | \; BA \; | \; BB\\
-		B &\rightarrow 00
-    \end{split}
-\end{equation*}
-Finally, the remaining rules are converted into Chomsky normal form by adding additional variables and rules to the grammar, yielding:
-\begin{equation*}
-	\begin{split}
-		S &\rightarrow \mathbf{BA}B \; | \; \mathbf{00} \; | \; AB \; | \; BA \; | \; BB \; | \; \varepsilon\\
-    	A &\rightarrow \mathbf{BA}B \; | \; \mathbf{00} \; | \; AB \; | \; BA \; | \; BB\\
-		B &\rightarrow 00
-    \end{split}
-\quad\longrightarrow\quad
-	\begin{split}
-		S &\rightarrow \mathbf{C}B \; | \; \mathbf{DD} \; | \; AB \; | \; BA \; | \; BB \; | \; \varepsilon\\
-    	A &\rightarrow \mathbf{C}B \; | \; \mathbf{DD} \; | \; AB \; | \; BA \; | \; BB\\
-		\mathbf{C} &\rightarrow \mathbf{BA}\\
-		\mathbf{B} &\rightarrow \mathbf{DD}\\
-		\mathbf{D} &\rightarrow \mathbf{0}
-    \end{split}
-\end{equation*}
+\paragraph{b)} Assume (without loss of generality) that $k$ is even. Given a sequence $s \in \left\{ H,T \right\}^k$, an extension of the above scheme does the following: 1) it scans through $s$ two elements at a time and extracts tosses in the manner described in a). 2) it subsequently removes the pairs corresponding to those tosses from the $s$. It is easily verified that the resulting list has the form $\left\{ HH,TT \right\}^{k'}$ where $k' \leq k$. 3) it removes every other member of $s$, once again producing a sequence of the form $\left\{ H,T \right\}^k$. Steps 1), 2) and 3) are repeated until the list is empty, and the extracted tosses are reported.
 
-\section*{2.42}
-\textbf{a)} Assume that the language $L_1 = \{0^n1^n0^n1^n| n\geq 0 \}$ is context-free. With this assumption, we get from the pumping lemma for context-free languages to that there exists a natural number p, such that all strings in $L_1$, which are at least p long, satisfy the three conditions in the lemma. But consider the string $s=0^p1^p0^p1^p$. Since $s$ is in $L_1$ and is longer than p, we know that $s$ satisfies the three conditions of the lemma. That is, we can write $s=uvxyz$ such that $|vy|>0$ and $|vxy|\leq p$ and $uv^ixy^iz$ is in $L_1$ for all $i\geq 0$. But since $|vxy|\leq p$, we have from the definition of $s$ that either $v$ and $y$ do not contain any 0's or they do not contain any 1's. Since $|vy|>0$, we have that at least one of $v$ or $y$ contains at least one 0 or 1. For that reason, when we pump $s$ to $uv^2xy^2z$ either the number of 0's will grow, while the number of 1's will not change, or the number of 1's will grow, while the number of 0's will not change. In both cases, the pumped string will have a different number of 0's and 1's. But all the strings in $L_1$ have the same number of 0's and 1's. Therefore, the pumped string is not in $L_1$. But from the pumping lemma, we know that $uv^2xy^2z$ is in $L_1$. This is a contradiction, which we have derived from our assumption that $L_1$ is context-free. This assumption is therefore false. $L_1$ is therefore not context-free.
+\section*{Problem 1.4}
+\paragraph{a)} One solution generates a list of all $n!$ possible permutations and subsequently generates a random index into the list. Generating one such index requires $\lceil \log_2(n!) \rceil$ random bits and can be generated s.t. it falls within bounds of the list with probability $n! / 2^{\lceil \log_2(n!) \rceil} = \log_2(n!) / \lceil \log_2(n!) \rceil \geq \log_2(n!) / (\log_2(n!)+1) \geq 1/2$. Let $N$ be the random variable denoting the number of indices that need to be generated to make the index falls within the bounds of the list. Then the expected total number of bits needed to generate such an index is given by $\textbf{E}\left[ N \cdot \lceil \log_2(n!) \rceil \right] = \textbf{E}\left[ N \right] \cdot \lceil \log_2(n!) \rceil \leq 2 \cdot \lceil \log_2(n!) \rceil \leq 2\log_2(n!) + 1 \leq (n+1) \log_2 \left( \frac{n+1}{e} \right) + 2 = O(n \log n)$ since $N$ is geometrically distributed with parameter $\geq 1/2$. For the lower bound, we get $\textbf{E}\left[ N \right] \cdot \lceil \log_2(n!) \rceil \geq 1 \cdot \lceil \log_2(n!) \rceil = \Theta(n \log_2 n)$ by a similar reasoning. The time and space complexities are an impractical $\Theta(n!)$.
 
-\textbf{b)} Assume that the language $L_2 = \{t_1\#...\#t_k| k\geq 2,\  t_i\in \{ a,b \}^*,\ t_i = t_j \text{ for some } i\neq j \}$ is context-free. With this assumptions, we now get from the pumping lemma for context-free languages to that there exists a natural number p, such that all strings in $L_2$, which are at least p long, satisfy the three conditions in the lemma. But consider the string $s=a^pb^p \# a^pb^p$. Since $s$ is in $L_2$ and is longer than p, we know that $s$ satisfies the three conditions of the lemma. That is, we can write $s=uvxyz$ such that $|vy|>0$ and $|vxy|\leq p$ and $uv^ixy^iz$ is in $L_2$ for all $i\geq 0$. 
+Another approach creates a bijection $f : [1 \hdots n] \rightarrow [1 \hdots n]$ by randomly assigning $\lceil \log_2 n \rceil$ bits to each element in the domain of $f$ corresponding to the elements of the range. Let $\varepsilon_i$ denote the event that the $i$th element of the domain is assigned a bitstring corresponding to a valid element in the range i.e. s.t. $f$ is a bijection.  There are $n-i+1$ valid indices and thus
+\begin{align*}
+\mathbf{Pr}\left[ \varepsilon_i \right] = \frac{n-i+1}{2^{\lceil \log_2 n \rceil}} \geq \frac{1}{2^{\lceil \log_2 n \rceil}} \geq \frac{1}{2^{\log_2 (n) + 1}} = \frac{1}{2n}
+\end{align*}
+Let $N_i$ be the random variable denoting the number of bitstrings required to generate a valid element of the range for the $i$th element in the domain. Then, the total expected number of bits required is 
+\begin{align*}
+\mathbf{E} \left[ \sum_{i=1}^{n} N_i \cdot \lceil \log_2 n \rceil \right] = \sum_{i=1}^{n} \mathbf{E}\left[ N_i \right] \cdot \lceil \log_2 n \rceil \leq \sum_{i=1}^{n} 2n \cdot \lceil \log_2 n \rceil = O(n^2 \log_2 n)
+\end{align*}
+For the lower bound, we note that we need at least one try for each element in the domain and get
+\begin{align*}
+\sum_{i=1}^{n} \mathbf{E}\left[ N_i \right] \cdot \lceil \log_2 n \rceil \geq \sum_{i=1}^{n} 1 \cdot \lceil \log_2 n \rceil = \Omega(n \log_2 n)
+\end{align*}
+For the running time, the algorithm checks whether a generated element is already used in the permutation in $\Theta(n)$ time, yielding expected running times of $\Omega(n^2)$ and $O(n^3)$.
 
-All the ways of splitting up $s$ as $uvxyz$ can be categorized with these cases: 
-\begin{enumerate}
-\item None of $v$ or $y$ contains the $\#$ symbol:
-\begin{enumerate}
-\item $v$ and $y$ both contain symbols only from the same side of $\#$.
-\item $v$ contains symbols only from the left side of $\#$, and $y$ contains symbols only from the right side of $\#$.
-\end{enumerate} 
-\item One of $v$ or $y$ contains the $\#$ symbol.
-\end{enumerate}
+\paragraph{b)} The claim is correct, since there is a 0 probability of a collisions occurring if the numbers are picked from the interval, uniformly, at random. However an unbounded number of bits are required to represent such a number, and hence a lazy approach, such as the one described in c) is required.
 
-Let us now argue why for each case we cannot find $v$ and $y$ such that $s=uvxyz$ can be pumped. \begin{enumerate}
-\item
-\begin{enumerate}
-\item Since none of $v$ or $y$ contain the $\#$, then $uv^2xy^2z$ still only contains one $\#$. Since $v$ and $y$ cannot both be empty strings and they both only contains symbols from one side of the $\#$, then the pumping only effects one side of the $\#$. Therefore $uv^2xy^2z$ will have the form $t_1\#t_2$, where $t_1\neq t_2$. This string is not in $L_2$.
-\item Since none of $v$ or $y$ contain the $\#$, then $uv^2xy^2z$ still only contains one $\#$. Since $v$ and $y$ contain symbols from different sides of $\#$ and none of the contains $\#$, then $x$ must contain $\#$. Since $|vxy|\leq p$, then we can conclude that $v$ cannot contain other symbols than $b's$, and $y$ cannot contain other symbols than $a's$. Since $v$ and $y$ cannot both be empty strings, then we can now conclude that $uv^2xy^2z$ will have the form $t_1\#t_2$, where $t_1\neq t_2$. This string is not in $L_2$.
-\end{enumerate}
-\item Since $v$ or $y$ contains the $\#$, then $uv^0xy^0z$ will not have any $\#$. In other words, it will just have the form $t_1$, where $t_1$ is some string in $\{a,b\}^*$. This string is not in $L_2$.
-\end{enumerate}
+\paragraph{c)} 
 
-\section*{2.54}
-We consider the possible ways to divide the string $s=1^0\#1^1\#1^2\# \hdots \#1^p$ according to the pumping lemma for CFGs. Obviously $s$ is in the language and the pumping lemma states that since $\left| s \right| \geq p$, it can be divided it into parts $uvxyz$, st. $\left| vxy \right| \leq p$, $\left| vy \right| \geq 0$ and $uv^ixy^iz$ is in the language for $i \geq 0$.
 
-Choosing either $v$ or $y$ as $\#$, pumping it up would yield more than one empty sequence between the sharps in $s$, and the resulting string would not be in the language. Choosing either $v$ or $u$ as any substring containing at least one sharp would also lead to a contradiction when pumping up (or down), by similar reasoning. Choosing either $v$ or $u$ as all ones will lead to a contradiction when pumping down, since this will result in a sequence of ones that already exists elsewhere. Specifically, choosing a length $k \leq p$ all-ones substring of any all-ones substring and pumping down will yield another all-ones substring of size at most $p-k$. But all such strings $1^{p-k}$ for $k \leq p$ are already a substring between sharps in $s$, leading to the contradiction and hence the grammar is not context free.
-
-%\begin{figure}[!hbt]
-%\center
-%\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick]
-%  \tikzstyle{every state}=[fill=red,draw=none,text=white]
-
-%  \node[initial,state] (A)                    {$q_a$};
-%  \node[state]         (B) [above right of=A] {$q_b$};
-%  \node[state]         (D) [below right of=A] {$q_d$};
-%  \node[state]         (C) [below right of=B] {$q_c$};
-%  \node[state]         (E) [below of=D]       {$q_e$};
-
-%  \path (A) edge              node {0,1,L} (B)
-%            edge              node {1,1,R} (C)
-%        (B) edge [loop above] node {1,1,L} (B)
-%            edge              node {0,1,L} (C)
-%        (C) edge              node {0,1,L} (D)
-%            edge [bend left]  node {1,0,R} (E)
-%        (D) edge [loop below] node {1,1,R} (D)
-%            edge              node {0,1,R} (A)
-%        (E) edge [bend left]  node {1,0,R} (A);
-%\end{tikzpicture}
-%  \caption{Output of running the program, showing the values produced by each %step.\label{lst:output}}
-%\end{figure}
-
-\section*{3.16}
-The book's solution to 3.16a) is a quite high-level description of how to combine a TM $M_1$ deciding a language $L_1$ and a TM $M_2$ deciding the language $L_2$ into a new TM $M$ that decides the union of the two languages. Our solution will follow this high-level style (that is, not specifying the details of the 7-tuples that describes the different turing-machines). We will be more careful than the book in the sense that we use non-determinism to make it a little more explicit how the new machine M makes sure that one of the machines $M_i$ does not end up working on something that it assumes is the original input-string, but really is output from other work by itself or the other machine.
-
-Assume that $L_1$ and $L_2$ are decidable languages. That is, there exists turing-machines $M_1$ and $M_2$ that respectively decides $L_1$ and $L_2$. Let us now show that the closure property holds under the different operations. In general, we will use non-deterministic TM's in our constructions, but since every non-deterministic TM has an equivalent deterministic TM, this does not make a difference for the decidability of the languages.
-
-\textbf{b)} We need to contruct a TM M that decides the concatenation $L_1L_2$. Let M be the TM given by the following high-level description:
-
-On input-string w: \begin{enumerate}
-\item Use non-determinism to split up w into xy in all possible ways.
-\item For each split up of w into xy:
-\begin{enumerate}
-\item Run $M_1$ on x.
-\item Run $M_2$ on y.
-\item Accept, if both $M_1$ and $M_2$ accepts. Otherwise, reject.  
-\end{enumerate}
-\end{enumerate}
-
-We now have to argue that M accepts if $w$ is $L_1L_2$, and rejects if $w$ is not in $L_1L_2$. Since every input-string w has finite length, there are only finitely many ways to split it up into two substrings. Therefore, we have only finitely many runs of line 2. For each run, the substring $x$ is accepted by $M_1$, if $x$ is in $L_1$, and rejected if $x$ is not in $L_1$. The same goes for $y$ with respect to $M_2$. Thus, if $w\in L_1L_2$, then there exist a way to split up $w$ in $xy$ such that $x\in L_1$, and $y\in L_2$, and then there will be some computation path in M that accepts $w$. Otherwise, if $w\notin L_2$, then for all computation paths in M, $M_1$ or $M_2$ will reject and therefore M will reject. Thus, M decides $L_1L_2$.
-
-\textbf{c)} We need to contruct a TM M that decides $(L_1)^*$. Let M be the TM given by the following high-level description.
-
-On input-string w:
-\begin{enumerate}
-\item Use non-determinism to split up w into $x_1x_2...x_n$ in all possible ways, where $|x_1|=|x_2|=...=|x_n|$, and $1\leq n \leq |w|$.
-\item For each split up of w into $x_1x_2...x_n$:
-\begin{enumerate}
-\item Run $M_1$ on $x_i$ for all $1\leq i \leq n$.
-\item Accept, if all runs of $M_1$ accepts. Otherwise, reject.
-\end{enumerate} 
-\end{enumerate}
-We now have to argue that M accepts if $w$ is $(L_1)^*$, and rejects if $w$ is not in $(L_1)^*$. Since every input-string w has finite length, there are only finitely many ways to split up w in the way described by line 1. Therefore, we have only finitely many runs of line 2. For each run, every the substring $x_i$ is accepted by $M_1$, if $x_i$ is in $L_1$ and rejected if $x_i$ is not in $L_1$. Thus, if $w\in (L_1)^*$, then there exist a way to split up $w$ in the way described by line 1 such that $x_i \in L_1$ for all $1\leq i \leq n$, and then there will be some computation path in M that accepts $w$. Otherwise, if $w\notin L_2$, then for all computation paths in M, $M_1$ will reject some substring $x_i$. Thus, M decides $(L_1)^*$.
-
-\textbf{d)} We need to contruct a TM M that decides $\overline{L_1}$. Let M be the TM given by the following high-level description.
-
-On input-string w:
-\begin{enumerate}
-\item Run $M_1$ on w. If $M_1$ accepts, then reject. Otherwise, accept. 
-\end{enumerate}
-We now have to argue that M accepts if $w$ is $\overline{L_1}$, and rejects if $w$ is not in $\overline{L_1}$. If $w$ is in $\overline{L_1}$, then $M_1$ rejects, and then M accepts. If $w$ is not in $\overline{L_1}$, then $w$ is in $L_1$, and then $M_1$ accepts, and then M rejects. 
-
-\textbf{e)} Since $L_1 \cap L_2=\overline{(\overline{L_1}\cup \overline{L_2})}$, then the closure under intersection follows from the closure under union and complementation.
-
-\section*{3.18}
-
+\section*{Problem 1.8}
 
 
 \end{document}
