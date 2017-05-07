@@ -66,6 +66,14 @@
 
 \section*{Exercise ???}
 
+\subsection*{3.1}
+We define $ee(m)$ to be the expected number of empty bins when m balls are thrown into n bins. We claim that $$ee(m)=\frac{(n-1)^m}{n^{m-1}}$$ and prove this by induction on the number m:\\
+\\
+First the base case. When 0 balls are thrown into n bins we of course expect to have n empty bins. We have $$ee(0)=\frac{(n-1)^0}{n^{0-1}}=\frac{1}{n^{-1}}=n$$ so the base case holds.\\
+\\
+Now for the induction step we assume that $ee(m)=\frac{(n-1)^m}{n^{m-1}}$ and need to prove $ee(m)=\frac{(n-1)^{m+1}}{n^m}$. Since the number of empty bins after one more ball can only be the same or one less than before that ball, we get that the expected number of empty bins after $m+1$ balls are equal to the expected number of empty bins after $m$ balls minus the probability that we get 1 less empty bin. So we get \begin{align*}ee(m+1)&=ee(m)-\frac{ee(m)}{n}=\frac{(n-1)^m}{n^{m-1}}-\frac{\left(\frac{(n-1)^m}{n^{m-1}}\right)}{n}\\&=\frac{n(n-1)^m}{n^m}-\frac{(n-1)^m}{n^m}=\frac{(n-1)(n-1)^m}{n^m}=\frac{(n-1)^{m+1}}{n^m}\end{align*}
+And we have proven the induction step, so by induction we get for any m $ee(m)=\frac{(n-1)^m}{n^{m-1}}$.
+
 \pagebreak
 
 \section*{Summary}
