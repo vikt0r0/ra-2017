@@ -64,17 +64,29 @@
 
 \pagebreak
 
-\section*{Exercise ???}
+\section*{Problems}
+
+\subsection*{2.1}
+We prove by induction over k that for any deterministic evaluation algorithm, there are instances of $T_{d,k}$ that forces the algorithm to read the values on all $d^{2k}$ leaves and the last leaf read determines whether the root is 1 or 0.\\
+\\
+Base step: for k=0 we only have one leaf, so any deterministic evaluation algorithm has to read them all. Furthermore that leaf is the root, so it determines whether the root is 1 or 0.\\
+\\
+Induction step: We assume it holds for any tree with size $k$, and need to show that it holds for any tree of size $k+1$. For a tree of size $k+1$, we have at the top a root that is an AND-note. Below that we have two OR-nodes, and below that we have 4 trees of size k. Since a deterministic evaluation algorithm looks at the nodes in a deterministic order, it also looks at the nodes in each of the subtrees in a specific order, and we can use the induction hypothesis.\\
+There has to be one of the subtrees that are the first to get its last node inspected. We use the induction hypothesis and set the last node inspected in that subtree in the way that makes the root of that subtree 0. Since the parent to that root is an OR-node, we don't know yet whether it will be 1 or 0.\\
+The 2nd subtree to get its last node inspected has 2 possibilities: Its root either shares a parent with the subtree we have already evaluated or it doesn't.\\
+In the case where it shares a parent, we set the last node inspected in the way that makes the root 1. The parent OR-node can now look at a 1 and a 0, so the result is 1, but then we don't know the result of the AND-node in the root of the whole tree. We set the last node in the 3rd subtree to get fully evaluated in such a way that the root of that subtree is 0, and we have to inspect the 4th subtree. We can set the last node in the 4th subtree both so the root of the whole tree is 0 and so the root of the whole tree is 1.
+In the case, where the 2nd subtree fully evaluated does not share a parent with the first, we set the last node in that subtree, so the root of the tree is 0, and we can't evaluate the parent OR-node. The 3rd subtree fully evaluated now either shares a parent with the first or the second subtree fully evaluated. We set the last node in the 3rd subtree in such a way that the root is 1, and we then have to also fully evaluate the 4th subtree before we can evaluate the root of the whole tree. Depending what we set the last node inspected in the 4th subtree, the root of the whole tree can both result in 0 or 1.\\
+And we're done.
 
 \subsection*{3.1}
-We define $ee(m)$ to be the expected number of empty bins when m balls are thrown into n bins. We claim that $$ee(m)=\frac{(n-1)^m}{n^{m-1}}$$ and prove this by induction on the number m:\\
-\\
-First the base case. When 0 balls are thrown into n bins we of course expect to have n empty bins. We have $$ee(0)=\frac{(n-1)^0}{n^{0-1}}=\frac{1}{n^{-1}}=n$$ so the base case holds.\\
-\\
-Now for the induction step we assume that $ee(m)=\frac{(n-1)^m}{n^{m-1}}$ and need to prove $ee(m)=\frac{(n-1)^{m+1}}{n^m}$. Since the number of empty bins after one more ball can only be the same or one less than before that ball, we get that the expected number of empty bins after $m+1$ balls are equal to the expected number of empty bins after $m$ balls minus the probability that we get 1 less empty bin. So we get \begin{align*}ee(m+1)&=ee(m)-\frac{ee(m)}{n}=\frac{(n-1)^m}{n^{m-1}}-\frac{\left(\frac{(n-1)^m}{n^{m-1}}\right)}{n}\\&=\frac{n(n-1)^m}{n^m}-\frac{(n-1)^m}{n^m}=\frac{(n-1)(n-1)^m}{n^m}=\frac{(n-1)^{m+1}}{n^m}\end{align*}
-And we have proven the induction step, so by induction we get for any m $ee(m)=\frac{(n-1)^m}{n^{m-1}}$.\\
-\\
-For $m=n$ we get $$ee(n)=\frac{(n-1)^n}{n^{n-1}}=n\frac{(n-1)^n}{n^n}=n\left(\frac{n-1}{n}\right)^n=n\left(n-\frac{1}{n}\right)^n$$ And since $\left(n-\frac{1}{n}\right)^n$ goes towards $e$ when n goes towards infinity, we get that for large n the expected number of empty bins approaches $\frac{n}{e}$ as we wanted to show.
+Let $X$ be the number of empty bins after $m$ balls and $X_i$ be 1 if bin $i$ is empty after $m$ balls and 0 otherwise for $0\leq i\leq n$. For $X_i$ to be empty after m balls, we need all the m balls to land in a different bin, so we have $Pr[X_i]=\left(1-\frac{1}{n}\right)^m$ and $$E[X]=\Sigma_{i=0}^nE[X_i]=\Sigma_{i=0}^nPr[X_i]=\Sigma_{i=0}^n\left(1-\frac{1}{n}\right)^m=n\left(1-\frac{1}{n}\right)^m$$
+For $m=n$ we get $$E[X]=n\left(1-\frac{1}{n}\right)^n\approx\frac{n}{e}$$
+
+\subsection*{3.3(a)}
+Let $X$ be the number of memory modules that has received exactly 1 memory request after $n$ memory requests has been sent and $X_i$ be 1 if memory module $i$ has received exactly 1 memory request after $n$ memory requests has been sent and 0 otherwise for $0\leq i\leq n$. We have $Pr[X_i]={n\choose 1}\left(\frac{1}{n}\right)^1\left(1-\frac{1}{n}\right)^{n-1}=\left(1-\frac{1}{n}\right)^{n-1}$.\\
+Let $Y$ be the number of memory modules that has received exactly 2 memory request after $n$ memory requests has been sent and $Y_i$ be 1 if memory module $i$ has received exactly 2 memory request after $n$ memory requests has been sent and 0 otherwise for $0\leq i\leq n$. We have $Pr[Y_i]={n\choose 2}\left(\frac{1}{n}\right)^2\left(1-\frac{1}{n}\right)^{n-2}={n\choose 2}\frac{1}{n^2}\left(1-\frac{1}{n}\right)^{n-2}$.
+Let $Z$ be the number of processors whose requests are satisfied. We have \begin{align*}E[Z]&=E[X]+2E[Y]=\left(\Sigma_{i=0}^nE[X_i]\right)+2\Sigma_{i=0}^nE[Y_i]=\left(\Sigma_{i=0}^nPr[X_i]\right)+2\Sigma_{i=0}^nPr[Y_i]\\&=\left(\Sigma_{i=0}^n\left(1-\frac{1}{n}\right)^{n-1}\right)+2\Sigma_{i=0}^n{n\choose 2}\frac{1}{n^2}\left(1-\frac{1}{n}\right)^{n-2}\\&=n\left(1-\frac{1}{n}\right)^{n-1}+2n\frac{n(n-1)}{2}\frac{1}{n^2}\left(1-\frac{1}{n}\right)^{n-2}=\frac{n}{1-\frac{1}{n}}\left(1-\frac{1}{n}\right)^n+(n-1)\left(1-\frac{1}{n}\right)^{n-2}\\&=\frac{n-1}{\left(1-\frac{1}{n}\right)^2}\left(1-\frac{1}{n}\right)^n+\frac{n-1}{\left(1-\frac{1}{n}\right)^2}\left(1-\frac{1}{n}\right)^n\approx\frac{2e(n-1)}{\left(\frac{n-1}{n}\right)^2}=\frac{2en^2}{n-1}\end{align*}
+This is around $2en$, which is of course impossible (we can satisfy more processor than are available), so we must have made a mistake somewhere.
 
 \pagebreak
 
