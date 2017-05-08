@@ -22,6 +22,7 @@
 
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{lem}[thm]{Lemma}
+\newtheorem{dfn}[thm]{Definition}
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{cor}[thm]{Corollary}
 \newtheorem{conj}[thm]{Conjecture}
@@ -68,7 +69,139 @@
 
 \pagebreak
 
-\section*{Summary}
+\section{Summary}
+\subsection{Balls into bins}
+Given $n$ balls and $n$ bins, and ball $i$ goes into bin $j$ with probability $1/n$. Then the expected number of balls in bin $j$ is 1. Let $\varepsilon^=_j(k)$ denote the event where bin $j$ receives exactly $k$ balls. Then
+\begin{align*}
+\mathbf{Pr}\left[ \varepsilon^=_j(k) \right] = \binom{n}{k}\frac{1}{n}^n \left( 1-\frac{1}{n} \right)^{n-k} \leq \binom{n}{k}\frac{1}{n}^n \leq \binom{ne}{k}^k \left( \frac{1}{n} \right)^n = \left(\frac{e}{k}\right)^k 
+\end{align*}
+Now, let $\varepsilon^\geq_j(k)$ denote the event where bin $j$ receives $k$ or more balls, then
+\begin{align*}
+\mathbf{Pr}\left[ \varepsilon^\geq_j(k) \right] = \sum_{i=k}^{n} \mathbf{Pr}\left[ \varepsilon^=_j(i) \right] \leq \sum_{i=k}^{n} \left(\frac{e}{i}\right)^i \leq \sum_{i=k}^{n} \left(\frac{e}{k}\right)^i \leq \left(\frac{e}{k}\right)^k \sum_{i=0}^{\infty} \left( \frac{e}{k} \right)^i = \left( \frac{e}{k} \right)^k \frac{1}{1-\frac{e}{k}}
+\end{align*}
+Choosing $k^*=\frac{3 \ln n}{\ln \ln n}$ and inserting it into the above yields
+\begin{align*}
+\mathbf{Pr}\left[ \varepsilon_j^\geq(k^*) \right] \leq \frac{1}{n^2}.
+\end{align*}
+The probability of any bin receiving more than $k^*$ balls is given by
+\begin{align*}
+\mathbf{Pr}\left[ \cup_{j=1}^{n} \varepsilon_j^\geq(k^*) \right] \leq \sum_{j=1}^n \mathbf{Pr}\left[ \varepsilon_j^\geq(k^*) \right] \leq n \frac{1}{n^2} = \frac{1}{n}
+\end{align*}
 
+\subsection{Markov's Inequality}
+Given a non-negative random variable $Y$ and $t > 0$, then
+\begin{align*}
+\mathbf{Pr}\left[ Y \geq t \mathbf{E}\left[ Y \right] \right] \leq \frac{1}{t} \;\; \mathrm{ and } \;\; \mathbf{Pr}\left[ Y \geq t \right] \leq \frac{\mathbf{E}\left[ Y \right]}{t}
+\end{align*}
+To show the rightmost form, we get
+\begin{align*}
+\mathbf{E}\left[ Y \right] = \sum_{i} i \cdot \mathbf{Pr}\left[ Y=i \right] \geq \sum_{i \geq t} i \cdot \mathbf{Pr}\left[ Y=i \right] \geq t \cdot \sum_{i \geq t} \mathbf{Pr}\left[ Y=i \right] \geq t \cdot \mathbf{Pr}\left[ Y \geq i \right] 
+\end{align*}
+The leftmost form follows by substituting $t$ by $t \cdot \mathbf{E}\left[ Y \right]$ into the rightmost form.
+
+\subsection{Chebyshev's Inequality}
+Given rand. var. $X$, define the variance of $X$, denoted by $\sigma^2$, as $\sigma^2 = \mathbf{E}\left[ \left( X - \mu_X \right)^2 \right]$, where $\mu_X = \mathbf{E} \left[ X \right]$. Now, given a random variable $X$ and $t > 0$, then
+\begin{align*}
+\mathbf{Pr}\left[ \left| X-\mu_X \right| \geq t\sigma_X \right] &= \mathbf{Pr}\left[ \left( X-\mu_X \right)^2 \geq t^2\sigma_X^2 \right] \\
+&= \mathbf{Pr}\left[ \left( X-\mu_X \right)^2 \geq t^2 \mathbf{E}\left[\left( X-\mu_X \right)^2\right] \right] \\
+&= \mathbf{Pr}\left[ Y \geq t^2\mathbf{E}\left[Y\right] \right] \\
+&= \frac{1}{t^2}
+\end{align*}
+The last step follows from applying Markov's inequality.
+
+\subsection{Lazy Selection}
+Refer to the algorithm given in the book. Let $S(k)$ denote the $k$th smallest element in $S$ and $r_{S(a)}$ denote the rank of $a$ in $S$. Any known det. alg. requires $\geq 3n$ comparisons to identify $S_{k}$. We want to show that \textsc{LazySelect} finds $S(k)$ with $2n + O(n)$ comparisons with prob. $1-O(n^{-1/4})$. The algorithm can err. if $S(k) < a$. For this to happen, fewer than $\mathcal{l}$ samples are smaller than $S(k)$ for $i=1, \hdots, n^{3/4}$, $X_i=1$ if $i$th sample $\leq S(k)$, and $X_i = 0$ otherwise. Let $X=\sum^{n^{3/4}}_{i=1} X_i$. We will bound the error probability using Chebyshev's inequality. We get $\mu_X = \sum^{n^{3/4}}_{i=1} \mu_{X_i} = n^{3/4}\cdot \frac{k}{n}=kn^{-1/4}$ and $\sigma_X^2 = \sum^{n^{3/4}}_{i=1} \sigma^2_{X_i} = n^{3/4}\frac{k}{n}\left( 1-\frac{k}{n} \right) \leq \frac{1}{4}n^{3/4}$ implying $\sigma_X \leq \frac{1}{2}n^{3/8}$ and
+\begin{align*}
+\mathbf{Pr} \left[ X \leq l \right] &= \mathbf{Pr} \left[ X \leq \mu_X - \sqrt{n} \right] = \mathbf{Pr} \left[ \mu_X - X \geq \sqrt{n} \right] \leq \mathbf{Pr} \left[ \left| \mu_X - X \right| \geq \sqrt{n} \right] \\
+&\leq \mathbf{Pr} \left[ \left| \mu_X - X \right| \geq 2n^{1/8}\sigma_X \right] \leq \frac{1}{4n^{1/4}} = O(n^{-1/4})
+\end{align*}
+and hence the success probability is $\geq 1-O(n^{-1/4})$.
+
+\subsection{Two-point Sampling}
+\begin{lem}
+Let $a,b \in \mathbb{Z}_n$ where $n$ is a prime be picked independently and uniformly at random. Let $y_i = (a_i + b) \mod n$ for $i = 0, \hdots, n-1$. Then for all distinct $i,j \in \mathbb{Z}_n$, $y_i$ and $y_j$ are pairwise ind. and uniformly distributed in $\mathbb{Z}_n$. \\
+\end{lem}
+
+\begin{dfn}
+Variables $X_1, \hdots, X_n$ are pairwise ind. iff. for all distinct $i,j$ and all $x_y$, $\mathbf{Pr}\left[ X_i = x \; | \; X_j = y \right] = \mathbf{Pr}\left[ X_i = x \right]$. \\
+\end{dfn}
+
+\begin{lem}
+If $X_1, ... X_n$ are pairwise independent and $X = \sum X_{i=1}^n X_i$ then $\sigma^2_X = \sum_{i=1}^n \sigma_{X_i}^2$
+\end{lem}
+
+Given an algorithm $A(x,r)$ for deciding $L$ where $x \in L$ and $r$ is a random number in $\mathbb{Z}_n = \left\{ 0, \hdots, n-1 \right\}$ where $n$ is a prime s.t.
+\begin{align*}
+&\text{1) If } x \not\in L \text{ then } A(x,r) = 0 \; \forall r \in \mathbb{Z}_n \\
+&\text{2) If } x \in L \text{ then } A(x,r) = 1 \text{ for at least half of the choices of } r \in \mathbb{Z}_n
+\end{align*}
+Simple method: Pick $t$ numbers, $r_i, \hdots, r_t$ independently and uniformly at random from $\mathbb{Z}_n$. Output $\lor_{i=1}^t A(x,r_i)$. Given $x \in L$ the failure probability $\leq 1/2^t$. For $t=2$, the failure probability $\leq 1/4$.
+
+Two-point method: Now let $a,b \in \mathbb{Z}_n$ be picked uniformly at random. Let $r_i = (a_i + b) \mod n$, $Y_i = A(x, r_i)$ for $i = 0, \hdots, n-1$ and $Y=\sum_{i=0}^{n-1}Y_i$. We wish to bound $\mathbf{Pr}\left[ Y=0 \right]$ using Chebyshev's inequality. Now $\mu_{Y} = \sum^{n-1}_{i=0}\mu_{Y_i} \geq n/2$ and $\sigma_Y^2 = \sum_{i=0}^{n-1} \sigma^2_{Y_{i}} \geq n/4 \Rightarrow \sigma_Y \geq \sqrt{n}/2$. Inserting into Chebyshev's Inequality yields
+\begin{align*}
+\mathbf{Pr}\left[ Y = 0 \right] \leq \mathbf{Pr}\left[ \left| Y - \mu_Y \right| \geq \sqrt{n} \sigma_Y \right] \leq \frac{1}{n}
+\end{align*}
+which is better than $1/4$ for $n \geq 4$.
+
+\subsection{Coupon Collector's Problem}
+Given $n$ types of coupons, a trial means picking a coupon independently and at random. Let $X = \text{\# of trials to get all } n \text{ coupon types}$. For $i=0, \hdots, n-1$, the $i$th epoch consists of the trials starting just after the $i$th success and ending in the $(i+1)$th success. Define $X_i = \text{\# of trials in the } i\text{th epoch.}$, then $X=\sum_{i=0}^{n-1} X_i$. Now
+\begin{align*}
+\mathbf{E}\left[ X \right] = \sum_{i=0}^{n-1} \mathbf{E}\left[ X_i \right] = \sum_{i=0}^{n-1} \frac{n}{n-i} = \sum_{i=1}^{n} \frac{n}{i} =  n \sum_{i=1}^{n} \frac{1}{i} = n H_{n} = n \ln n + O(n)
+\end{align*}
+Let $\varepsilon_i^r$ denote the event that coupon type $i$ is not picked in the first $r$ trials. Then
+\begin{align*}
+\mathbf{Pr}\left[ \varepsilon_i^r \right] = \left(1-\frac{1}{n}\right)^r \leq e^{-r/n}
+\end{align*}
+Pick $r=\beta n \ln n$, where $\beta$ is a constant, then $\mathbf{Pr}\left[ \varepsilon_i^r \right] \leq e^{-\beta \ln n} = n^{-\beta}$ and
+\begin{align*}
+\mathbf{Pr}\left[ \cup_{i=1}^n \right] \leq \sum_{i=1}^n \mathbf{Pr}\left[ \varepsilon_i^r \right] \leq n^{1-\beta}
+\end{align*}
+For $\beta=2$, we get $\mathbf{Pr}\left[ \cup_{i=1}^n \right] \leq 1/n$.
+
+\subsection{Chernoff Bounds}
+Given $n$ independent indicator variables $X_1, \hdots, X_n$, $p_i = \mathbf{Pr}\left[ X_i = 1 \right]$, $0 < p_i < 1$ for $i=1, \hdots, n$. Let $X=\sum_{i=1}^n X_i$ and $\mu = \mathbf{E} \left[ X \right] = \sum_{i=1}^n p_i$. Then
+\begin{align*}
+\mathbf{Pr}\left[ X > (1-\delta)\mu_X \right]
+&= \mathbf{Pr}\left[ e^{tX} > e^{t(1-\delta)\mu_X} \right]
+< \frac{\mathbf{E}\left[ e^{tX} \right]}{e^{t(1-\delta)\mu_X}}
+= \frac{\prod_{i=1}^n \mathbf{E}\left[ e^{tX_i} \right]}{e^{t(1-\delta)\mu_X}} \\
+&= \frac{\prod_{i=1}^n \left( p_i e^t + 1-p_i \right)}{e^{t(1-\delta)\mu_X}}
+= \frac{\prod_{i=1}^n \left( 1 + p_i (e^t - 1) \right)}{e^{t(1-\delta)\mu_X}} \\
+&\leq \frac{\prod_{i=1}^n e^{p_i (e^t-1)}}{e^{t(1-\delta)\mu_X}}
+\leq \left( \frac{e^{(e^t-1)}}{e^{t(1-\delta)}} \right)^{\mu_X}
+= \left( \frac{e^{\delta}}{\left( 1 + \delta \right)^{1+\delta}} \right)^{\mu_X}
+\end{align*}
+Furthermore
+\begin{align*}
+\mathbf{Pr}\left[ X < (1-\delta)\mu_X \right]
+&= \mathbf{Pr}\left[ -X < -(1-\delta)\mu_X \right]
+= \mathbf{Pr}\left[ e^{-tX} < e^{-t(1-\delta)\mu_X} \right] \\
+&< \left( \frac{e^{-\delta}}{\left( 1-\delta \right)^{1-\delta}} \right)^\mu
+= \left( \frac{e^{-\delta}}{e^{\left( 1-\delta \right) \ln (1-\delta)}} \right)^\mu \\
+&< \left( \frac{e^{-\delta}}{e^{\left( 1-\delta \right)\left( -\delta - \frac{\delta^2}{2} \right)}} \right)^\mu
+=  \left( \frac{e^{-\delta}}{e^{-\delta - \frac{\delta^2}{2} + \delta^2 + \frac{\delta^3}{2}}  } \right)^\mu \\
+&<  \left( \frac{e^{-\delta}}{e^{-\delta - \frac{\delta^2}{2} + \delta^2}  } \right)^\mu = \left( \frac{1}{e^{-\frac{\delta^2}{2} + \delta^2}  } \right)^\mu
+= \left( e^{\frac{\delta^2}{2} - \delta^2} \right)^\mu \\
+&= e^{\mu\frac{\delta^2}{2} - \mu\delta^2} = e^{-\mu\sigma^2/2}
+\end{align*}
+
+\subsection{Set-Balancing}
+Given a matrix $A \in \left\{ 0,1 \right\}^{n \times n}$, find a vector $\overline{b} \in \left\{ -1, 1 \right\}^n$ s.t. $|| A\overline{b} ||_{\infty}$ is minimized. Pick each entry of $\overline{b}$ to be $1$ with probability $1/2$ and $-1$ otherwise. Now, $\mathbf{E} \left[ || A\overline{b} ||_{\infty} \right] = 0$. Consider a row $i$, $A_{i}$, of $A$, and assume for now that all entries are 1. Let $X$ be the \# of 1's in $\overline{b}$. Now
+\begin{align*}
+\mathbf{Pr} \left[ | A_i\overline{b} | > 2\sqrt{2n \ln n} \right] &\leq \mathbf{Pr} \left[ X > \frac{n}{2} + \sqrt{2n \ln n} \; \lor \; X < \frac{n}{2} - \sqrt{2n \ln n} \right] \\
+&\leq \mathbf{Pr} \left[ X > \frac{n}{2} + \sqrt{2n \ln n} \right] + \mathbf{Pr} \left[ X < \frac{n}{2} - \sqrt{2n \ln n} \right] \\
+&\leq \frac{1}{n^2} + \frac{1}{n^2} = \frac{2}{n^2}
+\end{align*}
+and the third inequality follows from
+\begin{align*}
+\mathbf{Pr} \left[ X < \frac{n}{2} - \sqrt{2n \ln n} \right]
+&= \mathbf{Pr} \left[ X < \left( 1 - \frac{2\sqrt{2n \ln n}}{n} \right)\frac{n}{2} \right]
+< e^{-\frac{n}{2} \left( \frac{2\sqrt{2n \ln n}}{n}\right)^2\frac{1}{2}} \\
+&< e^{-\frac{n}{4} \left( \frac{8n \ln n}{n^2}\right)} = e^{-2\ln n} = 1/n^2
+\end{align*}
+where the first inequality follows from applying the second Chernoff bound to the inequality with $\delta=\frac{2\sqrt{2n \ln n}}{n}$ and $\mu=n/2$. Finally applying an union bound over all rows we get
+\begin{align*}
+\mathbf{Pr} \left[ || A\overline{b} ||_{\infty} > 2\sqrt{2n \ln n} \right] \geq \sum_{i=1}^n \mathbf{Pr} \left[ | A_i\overline{b} | > 2\sqrt{2n \ln n} \right] \leq \sum_{i=1}^n \frac{2}{n^2} = \frac{2}{n}
+\end{align*}
 
 \end{document}
