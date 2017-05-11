@@ -65,7 +65,7 @@
 
 \pagebreak
 
-\section*{Exercise ???}
+\section*{Assigment}
 
 \subsection*{3.1}
 We define $ee(m)$ to be the expected number of empty bins when m balls are thrown into n bins. We claim that $$ee(m)=\frac{(n-1)^m}{n^{m-1}}$$ and prove this by induction on the number m:\\
@@ -79,8 +79,8 @@ For $m=n$ we get $$ee(n)=\frac{(n-1)^n}{n^{n-1}}=n\frac{(n-1)^n}{n^n}=n\left(\fr
 
 \pagebreak
 
-\section{Summary}
-\subsection{Balls into bins}
+\section*{Summary}
+\subsection*{Balls into bins}
 Given $n$ balls and $n$ bins, and ball $i$ goes into bin $j$ with probability $1/n$. Then the expected number of balls in bin $j$ is 1. Let $\varepsilon^=_j(k)$ denote the event where bin $j$ receives exactly $k$ balls. Then
 \begin{align*}
 \mathbf{Pr}\left[ \varepsilon^=_j(k) \right] = \binom{n}{k}\frac{1}{n}^n \left( 1-\frac{1}{n} \right)^{n-k} \leq \binom{n}{k}\frac{1}{n}^n \leq \binom{ne}{k}^k \left( \frac{1}{n} \right)^n = \left(\frac{e}{k}\right)^k 
@@ -98,7 +98,7 @@ The probability of any bin receiving more than $k^*$ balls is given by
 \mathbf{Pr}\left[ \cup_{j=1}^{n} \varepsilon_j^\geq(k^*) \right] \leq \sum_{j=1}^n \mathbf{Pr}\left[ \varepsilon_j^\geq(k^*) \right] \leq n \frac{1}{n^2} = \frac{1}{n}
 \end{align*}
 
-\subsection{Markov's Inequality}
+\subsection*{Markov's Inequality}
 Given a non-negative random variable $Y$ and $t > 0$, then
 \begin{align*}
 \mathbf{Pr}\left[ Y \geq t \mathbf{E}\left[ Y \right] \right] \leq \frac{1}{t} \;\; \mathrm{ and } \;\; \mathbf{Pr}\left[ Y \geq t \right] \leq \frac{\mathbf{E}\left[ Y \right]}{t}
@@ -109,7 +109,7 @@ To show the rightmost form, we get
 \end{align*}
 The leftmost form follows by substituting $t$ by $t \cdot \mathbf{E}\left[ Y \right]$ into the rightmost form.
 
-\subsection{Chebyshev's Inequality}
+\subsection*{Chebyshev's Inequality}
 Given rand. var. $X$, define the variance of $X$, denoted by $\sigma^2$, as $\sigma^2 = \mathbf{E}\left[ \left( X - \mu_X \right)^2 \right]$, where $\mu_X = \mathbf{E} \left[ X \right]$. Now, given a random variable $X$ and $t > 0$, then
 \begin{align*}
 \mathbf{Pr}\left[ \left| X-\mu_X \right| \geq t\sigma_X \right] &= \mathbf{Pr}\left[ \left( X-\mu_X \right)^2 \geq t^2\sigma_X^2 \right] \\
@@ -119,7 +119,7 @@ Given rand. var. $X$, define the variance of $X$, denoted by $\sigma^2$, as $\si
 \end{align*}
 The last step follows from applying Markov's inequality.
 
-\subsection{Lazy Selection}
+\subsection*{Lazy Selection}
 Refer to the algorithm given in the book. Let $S(k)$ denote the $k$th smallest element in $S$ and $r_{S(a)}$ denote the rank of $a$ in $S$. Any known det. alg. requires $\geq 3n$ comparisons to identify $S_{k}$. We want to show that \textsc{LazySelect} finds $S(k)$ with $2n + O(n)$ comparisons with prob. $1-O(n^{-1/4})$. The algorithm can err. if $S(k) < a$. For this to happen, fewer than $\mathcal{l}$ samples are smaller than $S(k)$ for $i=1, \hdots, n^{3/4}$, $X_i=1$ if $i$th sample $\leq S(k)$, and $X_i = 0$ otherwise. Let $X=\sum^{n^{3/4}}_{i=1} X_i$. We will bound the error probability using Chebyshev's inequality. We get $\mu_X = \sum^{n^{3/4}}_{i=1} \mu_{X_i} = n^{3/4}\cdot \frac{k}{n}=kn^{-1/4}$ and $\sigma_X^2 = \sum^{n^{3/4}}_{i=1} \sigma^2_{X_i} = n^{3/4}\frac{k}{n}\left( 1-\frac{k}{n} \right) \leq \frac{1}{4}n^{3/4}$ implying $\sigma_X \leq \frac{1}{2}n^{3/8}$ and
 \begin{align*}
 \mathbf{Pr} \left[ X \leq l \right] &= \mathbf{Pr} \left[ X \leq \mu_X - \sqrt{n} \right] = \mathbf{Pr} \left[ \mu_X - X \geq \sqrt{n} \right] \leq \mathbf{Pr} \left[ \left| \mu_X - X \right| \geq \sqrt{n} \right] \\
@@ -127,7 +127,7 @@ Refer to the algorithm given in the book. Let $S(k)$ denote the $k$th smallest e
 \end{align*}
 and hence the success probability is $\geq 1-O(n^{-1/4})$.
 
-\subsection{Two-point Sampling}
+\subsection*{Two-point Sampling}
 \begin{lem}
 Let $a,b \in \mathbb{Z}_n$ where $n$ is a prime be picked independently and uniformly at random. Let $y_i = (a_i + b) \mod n$ for $i = 0, \hdots, n-1$. Then for all distinct $i,j \in \mathbb{Z}_n$, $y_i$ and $y_j$ are pairwise ind. and uniformly distributed in $\mathbb{Z}_n$. \\
 \end{lem}
@@ -153,7 +153,7 @@ Two-point method: Now let $a,b \in \mathbb{Z}_n$ be picked uniformly at random. 
 \end{align*}
 which is better than $1/4$ for $n \geq 4$.
 
-\subsection{Coupon Collector's Problem}
+\subsection*{Coupon Collector's Problem}
 Given $n$ types of coupons, a trial means picking a coupon independently and at random. Let $X = \text{\# of trials to get all } n \text{ coupon types}$. For $i=0, \hdots, n-1$, the $i$th epoch consists of the trials starting just after the $i$th success and ending in the $(i+1)$th success. Define $X_i = \text{\# of trials in the } i\text{th epoch.}$, then $X=\sum_{i=0}^{n-1} X_i$. Now
 \begin{align*}
 \mathbf{E}\left[ X \right] = \sum_{i=0}^{n-1} \mathbf{E}\left[ X_i \right] = \sum_{i=0}^{n-1} \frac{n}{n-i} = \sum_{i=1}^{n} \frac{n}{i} =  n \sum_{i=1}^{n} \frac{1}{i} = n H_{n} = n \ln n + O(n)
@@ -168,7 +168,7 @@ Pick $r=\beta n \ln n$, where $\beta$ is a constant, then $\mathbf{Pr}\left[ \va
 \end{align*}
 For $\beta=2$, we get $\mathbf{Pr}\left[ \cup_{i=1}^n \right] \leq 1/n$.
 
-\subsection{Chernoff Bounds}
+\subsection*{Chernoff Bounds}
 Given $n$ independent indicator variables $X_1, \hdots, X_n$, $p_i = \mathbf{Pr}\left[ X_i = 1 \right]$, $0 < p_i < 1$ for $i=1, \hdots, n$. Let $X=\sum_{i=1}^n X_i$ and $\mu = \mathbf{E} \left[ X \right] = \sum_{i=1}^n p_i$. Then
 \begin{align*}
 \mathbf{Pr}\left[ X > (1-\delta)\mu_X \right]
@@ -195,7 +195,7 @@ Furthermore
 &= e^{\mu\frac{\delta^2}{2} - \mu\delta^2} = e^{-\mu\sigma^2/2}
 \end{align*}
 
-\subsection{Set-Balancing}
+\subsection**{Set-Balancing}
 Given a matrix $A \in \left\{ 0,1 \right\}^{n \times n}$, find a vector $\overline{b} \in \left\{ -1, 1 \right\}^n$ s.t. $|| A\overline{b} ||_{\infty}$ is minimized. Pick each entry of $\overline{b}$ to be $1$ with probability $1/2$ and $-1$ otherwise. Now, $\mathbf{E} \left[ || A\overline{b} ||_{\infty} \right] = 0$. Consider a row $i$, $A_{i}$, of $A$, and assume for now that all entries are 1. Let $X$ be the \# of 1's in $\overline{b}$. Now
 \begin{align*}
 \mathbf{Pr} \left[ | A_i\overline{b} | > 2\sqrt{2n \ln n} \right] &\leq \mathbf{Pr} \left[ X > \frac{n}{2} + \sqrt{2n \ln n} \; \lor \; X < \frac{n}{2} - \sqrt{2n \ln n} \right] \\
