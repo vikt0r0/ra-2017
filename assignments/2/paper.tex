@@ -91,7 +91,88 @@ This is around $2en$, which is of course impossible (we can satisfy more process
 
 \pagebreak
 
-\section*{Summary}
+\section*{Summary - April 27th and May 2nd}
+\subsection*{Game tree evaluation}
+Consider an algorithm for evaluating perfect, boolean, binary game trees with $n$ $0/1$-leaves consisting of AND-nodes (min) on even levels and OR-nodes (max) on uneven levels. Then
+\\
+\begin{thm}
+Let $k$ denote the number of and-or levels in the tree, so that the height of the tree is $2k$ and the number of leaves is $n=4^k$. Then any det. algorithm might need to inspect all leaves and thus runs in $\Omega(n)$ or $\Omega(4^k)$ time in the worst case.
+\end{thm}
+We will give a rand. algorithm running in expected time $O(3^k) \approx O(n^{0.793})$. Let $T_w$ denote the subtree rooted at $w$ and $N_w$ be the number of leaves in $T_w$ inspected by the random. algorithm. Then we wish to show $\mathbf{E}\left[ N_r \right] \leq 3^k$ where $r$ is the root of such a game tree and do so by induction on $k \geq 0$. When $k=0$, $\mathbf{E}\left[ N_r \right] = 3^0 = 1 \leq 3^k$. Now for $k > 0$ we have
+\begin{figure}[!ht]
+\includegraphics[width=8cm]{img/gametree.png}
+\centering
+\end{figure}
+
+Consider child $u$ of $w$. Then in case $1$, both children are $0$ and the parent is an OR-node. Thus $\mathbf{E}\left[ N_u \right] \leq 2 \cdot 3^{k-1}$. In case $2$, one of the children are $1$ and another is $0$ and $\mathbf{E}\left[ N_u \right] \leq 3^{k-1} + \frac{1}{2} \cdot 3^{k-1} = \frac{3}{2} \cdot 3^{k-1}$. Next, consider the root node $w$. In case $1$, one child node is $0$ and the other is $1$ and $\mathbf{E}\left[ N_w \right] \leq \frac{1}{2} \cdot \left( 2 \cdot 3^{k-1} \right) + \frac{1}{2} \cdot \left( \frac{3}{2} \cdot 3^{k-1} + 2 \cdot 3^{k-1} \right) < 3^k$. In case $2$, both child nodes return $1$ and $\mathbf{E}\left[ N_w \right] \leq 2 \cdot \frac{3}{2} 3^{k-1} = 3^{k}$.
+
+\subsection*{Game theory (von Neumann)}
+Let $M$ be an $n \times n$ payoff-matrix in which each entry $M_{ij}$ denotes the payoff to the row player from the column player when the row player chooses strategy $i$ and the column player chooses strategy $j$.
+\\
+\begin{dfn}
+(Pure strategies) Define the values for row and column-player as $V_R = \max\limits_{i} \min\limits_{j} M_{ij}$ and $V_C = \min\limits_{j} \max\limits_{i} M_{ij}$, respectively
+\end{dfn}
+
+In general $V_R \leq V_C$ and when $V_R=V_C$ the game has a solution.
+\\
+\begin{dfn}
+(Mixed strategies) Strategy for row player is a prob. dist. over the rows of $M_{ij}$, $\overline{p}=\left( p_1, \hdots, p_n \right)$ and similarly for the column player with $\overline{q}$ over the columns in place of $\overline{p}$. Define the values for the row-player as $V_R = \max\limits_{\overline{p}} \min\limits_{\overline{q}} \sum \sum p_i \cdot q_j \cdot M_{ij}$ and $V_C = \min\limits_{\overline{q}} \max\limits_{\overline{p}} \sum \sum p_i \cdot q_j \cdot M_{ij}$
+\end{dfn}
+The following theorem shows that mixed-strategy games always have a solution \\
+\begin{thm}
+(von Neumann) For any game and any mixed strategies $\overline{p}$ and $\overline{q}$, $V_R = V_C$
+\end{thm}
+And the following theorem shows that the optimal mixed strategy, given the other player chooses a pure strategy always results in an equal payoff \\
+\begin{thm}
+(Loomis) $\max\limits_{\overline{p}} \min\limits_j \sum p_i M_{ij} = \min\limits_{\overline{q}} \max\limits_i \sum q_j M_{ij} $
+\end{thm}
+
+\subsection*{Yao's Minimax Principle}
+Given a finite set $\mathcal{I}$ of problem instances all of the same size and a finite set, $\mathcal{A}$, of det. algorithms for $\mathcal{I}$, let $C(I,A)$ denote the cost associated with running $A \in \mathcal{A}$ on a problem instance $I \in \mathcal{I}$
+\begin{figure}[!ht]
+\includegraphics[width=8cm]{img/payoffmatrix}
+\centering
+\end{figure}
+\begin{thm}
+(Yao's Minimax Principle) Given dists. $\overline{p}$ and $\overline{q}$, let $I_{\overline{p}}$ be picked from $\mathcal{I}$ according to $\overline{p}$, dually for $A_{\overline{q}}$. Then $\min\limits_{A \in \mathcal{A}} \mathbf{E}\left[ C(I_{\overline{p}}, A) \right] \leq \max\limits_{I \in \mathcal{I}} \mathbf{E} \left[ C(I, A_{\overline{q}}) \right]$
+\paragraph{Proof:} $\min\limits_{A \in \mathcal{A}} \mathbf{E}\left[ C(I_{\overline{p}}, A) \right] = \min\limits_{A \in \mathcal{A}}\limits \sum\limits_{I \in \mathcal{I}} \overline{p}(I) \cdot C(I_{\overline{p}}, A) \leq \sum\limits_{A \in \mathcal{A}} \overline{q}(A) \sum\limits_{I \in \mathcal{I}} \overline{p}(I) \cdot C(I_{\overline{p}}, A) = \sum\limits_{I \in \mathcal{I}} \overline{p}(I) \sum\limits_{A \in \mathcal{A}} \overline{q}(A) \cdot C(I_{\overline{p}}, A) \leq \max\limits_{I \in \mathcal{I}} \mathbf{E} \left[ C(I, A_{\overline{q}}) \right]$
+\end{thm}
+
+\subsection*{Lower bound for game tree evaluation}
+Choose $\overline{p}$: Independently, set each leaf to $1$ with prob. $p=\frac{3-\sqrt{5}}{2}$. $p$ satisfies $p=(1-p)^2$. Change tree to NOR tree. This does not change the semantics of the tree. \\
+\begin{lem}
+After fixing leaves according to $\overline{p}$, each node of $T$ is $1$ with prob. $p$.
+\paragraph{Proof:} $P[w\text{ set to } 1] = (1-p)^2 = p$.
+\end{lem}
+
+\subsection*{Derandomization}
+Consider boolean func. $f : \left\{ 0,1 \right\}^* \rightarrow \left\{ 0,1 \right\}$. A rand. boolean circuit, $C$, computes $f$ if:
+\begin{enumerate}
+\item $\forall x_1, \hdots, x_n$ s.t. $f(x_1, \hdots, x_n) = 0$, $C$ outputs $0$.
+\item $\forall x_1, \hdots, x_n$ s.t. $f(x_1, \hdots, x_n) = 1$, $C$ outputs $1$ for at least half of the $2^m$ assignments of values to $r_1, \hdots, r_m$.\\
+\end{enumerate} 
+\begin{dfn}
+(Rand.) circuits $C_1, \hdots$ is a (rand.) circuit family for $f$ if $C_i$ computes $f$ for all $x_1, \hdots, x_i$. \\
+\end{dfn}
+
+\begin{dfn}
+A circuit family $C_1, \hdots$ has polynomial size if $\forall n \left| C_n \right| \leq n^c$ where $c$ is a constant. \\
+\end{dfn}
+
+\begin{thm}
+If $f$ has a polynomial sized random circuit family then $f$ has a polynomial sized deterministic circuit family.
+
+\paragraph{Proof:} Given $n$, for each $C_n$, construct table $T$ with a row for each $2^n$ choices of $x_1, \hdots, x_n$ and a column for each $2^m$ choices of $r_1, \hdots, r_m$. Now if $x \not\in L$ then $\forall r, C_n(x,r) = 0$ and if $x \in L$ then $C_{n}(x,r) = 1$ for at least half the choices of $r$.
+\begin{enumerate}
+\item Remove all rows where $f$ only outputs 0.
+\item For each remaining row, at least half of the entries are 1, meaning that there must exist a column where at least half of the entries are 1. Construct circuit $T_1$ by hardwiring $r_1, \hdots, r_m$ to values for that column.
+\item Remove rows having a 1 in the chosen column.
+\item Construct $T_2$, $T_3, \hdots, T_k$ by repeating steps 2 and 3.
+\item Output the OR of the circuits $T_1, \hdots, T_k$
+\end{enumerate}
+\end{thm}
+We wish to bound the number of circuits and note that in each iteration we remove at least half of the rows of $T$. Hence $k \leq \log(2^n) = n$ the number of circuits in the deterministic circuit family is polynomial.
+
 \subsection*{Balls into bins}
 Given $n$ balls and $n$ bins, and ball $i$ goes into bin $j$ with probability $1/n$. Then the expected number of balls in bin $j$ is 1. Let $\varepsilon^=_j(k)$ denote the event where bin $j$ receives exactly $k$ balls. Then
 \begin{align*}
@@ -127,7 +208,7 @@ Given rand. var. $X$, define the variance of $X$, denoted by $\sigma^2$, as $\si
 \mathbf{Pr}\left[ \left| X-\mu_X \right| \geq t\sigma_X \right] &= \mathbf{Pr}\left[ \left( X-\mu_X \right)^2 \geq t^2\sigma_X^2 \right] \\
 &= \mathbf{Pr}\left[ \left( X-\mu_X \right)^2 \geq t^2 \mathbf{E}\left[\left( X-\mu_X \right)^2\right] \right] \\
 &= \mathbf{Pr}\left[ Y \geq t^2\mathbf{E}\left[Y\right] \right] \\
-&= \frac{1}{t^2}
+&\leq \frac{1}{t^2}
 \end{align*}
 The last step follows from applying Markov's inequality.
 
@@ -164,66 +245,5 @@ Two-point method: Now let $a,b \in \mathbb{Z}_n$ be picked uniformly at random. 
 \mathbf{Pr}\left[ Y = 0 \right] \leq \mathbf{Pr}\left[ \left| Y - \mu_Y \right| \geq \sqrt{n} \sigma_Y \right] \leq \frac{1}{n}
 \end{align*}
 which is better than $1/4$ for $n \geq 4$.
-
-\subsection*{Coupon Collector's Problem}
-Given $n$ types of coupons, a trial means picking a coupon independently and at random. Let $X = \text{\# of trials to get all } n \text{ coupon types}$. For $i=0, \hdots, n-1$, the $i$th epoch consists of the trials starting just after the $i$th success and ending in the $(i+1)$th success. Define $X_i = \text{\# of trials in the } i\text{th epoch.}$, then $X=\sum_{i=0}^{n-1} X_i$. Now
-\begin{align*}
-\mathbf{E}\left[ X \right] = \sum_{i=0}^{n-1} \mathbf{E}\left[ X_i \right] = \sum_{i=0}^{n-1} \frac{n}{n-i} = \sum_{i=1}^{n} \frac{n}{i} =  n \sum_{i=1}^{n} \frac{1}{i} = n H_{n} = n \ln n + O(n)
-\end{align*}
-Let $\varepsilon_i^r$ denote the event that coupon type $i$ is not picked in the first $r$ trials. Then
-\begin{align*}
-\mathbf{Pr}\left[ \varepsilon_i^r \right] = \left(1-\frac{1}{n}\right)^r \leq e^{-r/n}
-\end{align*}
-Pick $r=\beta n \ln n$, where $\beta$ is a constant, then $\mathbf{Pr}\left[ \varepsilon_i^r \right] \leq e^{-\beta \ln n} = n^{-\beta}$ and
-\begin{align*}
-\mathbf{Pr}\left[ \cup_{i=1}^n \right] \leq \sum_{i=1}^n \mathbf{Pr}\left[ \varepsilon_i^r \right] \leq n^{1-\beta}
-\end{align*}
-For $\beta=2$, we get $\mathbf{Pr}\left[ \cup_{i=1}^n \right] \leq 1/n$.
-
-\subsection*{Chernoff Bounds}
-Given $n$ independent indicator variables $X_1, \hdots, X_n$, $p_i = \mathbf{Pr}\left[ X_i = 1 \right]$, $0 < p_i < 1$ for $i=1, \hdots, n$. Let $X=\sum_{i=1}^n X_i$ and $\mu = \mathbf{E} \left[ X \right] = \sum_{i=1}^n p_i$. Then
-\begin{align*}
-\mathbf{Pr}\left[ X > (1-\delta)\mu_X \right]
-&= \mathbf{Pr}\left[ e^{tX} > e^{t(1-\delta)\mu_X} \right]
-< \frac{\mathbf{E}\left[ e^{tX} \right]}{e^{t(1-\delta)\mu_X}}
-= \frac{\prod_{i=1}^n \mathbf{E}\left[ e^{tX_i} \right]}{e^{t(1-\delta)\mu_X}} \\
-&= \frac{\prod_{i=1}^n \left( p_i e^t + 1-p_i \right)}{e^{t(1-\delta)\mu_X}}
-= \frac{\prod_{i=1}^n \left( 1 + p_i (e^t - 1) \right)}{e^{t(1-\delta)\mu_X}} \\
-&\leq \frac{\prod_{i=1}^n e^{p_i (e^t-1)}}{e^{t(1-\delta)\mu_X}}
-\leq \left( \frac{e^{(e^t-1)}}{e^{t(1-\delta)}} \right)^{\mu_X}
-= \left( \frac{e^{\delta}}{\left( 1 + \delta \right)^{1+\delta}} \right)^{\mu_X}
-\end{align*}
-Furthermore
-\begin{align*}
-\mathbf{Pr}\left[ X < (1-\delta)\mu_X \right]
-&= \mathbf{Pr}\left[ -X < -(1-\delta)\mu_X \right]
-= \mathbf{Pr}\left[ e^{-tX} < e^{-t(1-\delta)\mu_X} \right] \\
-&< \left( \frac{e^{-\delta}}{\left( 1-\delta \right)^{1-\delta}} \right)^\mu
-= \left( \frac{e^{-\delta}}{e^{\left( 1-\delta \right) \ln (1-\delta)}} \right)^\mu \\
-&< \left( \frac{e^{-\delta}}{e^{\left( 1-\delta \right)\left( -\delta - \frac{\delta^2}{2} \right)}} \right)^\mu
-=  \left( \frac{e^{-\delta}}{e^{-\delta - \frac{\delta^2}{2} + \delta^2 + \frac{\delta^3}{2}}  } \right)^\mu \\
-&<  \left( \frac{e^{-\delta}}{e^{-\delta - \frac{\delta^2}{2} + \delta^2}  } \right)^\mu = \left( \frac{1}{e^{-\frac{\delta^2}{2} + \delta^2}  } \right)^\mu
-= \left( e^{\frac{\delta^2}{2} - \delta^2} \right)^\mu \\
-&= e^{\mu\frac{\delta^2}{2} - \mu\delta^2} = e^{-\mu\sigma^2/2}
-\end{align*}
-
-\subsection*{Set-Balancing}
-Given a matrix $A \in \left\{ 0,1 \right\}^{n \times n}$, find a vector $\overline{b} \in \left\{ -1, 1 \right\}^n$ s.t. $|| A\overline{b} ||_{\infty}$ is minimized. Pick each entry of $\overline{b}$ to be $1$ with probability $1/2$ and $-1$ otherwise. Now, $\mathbf{E} \left[ || A\overline{b} ||_{\infty} \right] = 0$. Consider a row $i$, $A_{i}$, of $A$, and assume for now that all entries are 1. Let $X$ be the \# of 1's in $\overline{b}$. Now
-\begin{align*}
-\mathbf{Pr} \left[ | A_i\overline{b} | > 2\sqrt{2n \ln n} \right] &\leq \mathbf{Pr} \left[ X > \frac{n}{2} + \sqrt{2n \ln n} \; \lor \; X < \frac{n}{2} - \sqrt{2n \ln n} \right] \\
-&\leq \mathbf{Pr} \left[ X > \frac{n}{2} + \sqrt{2n \ln n} \right] + \mathbf{Pr} \left[ X < \frac{n}{2} - \sqrt{2n \ln n} \right] \\
-&\leq \frac{1}{n^2} + \frac{1}{n^2} = \frac{2}{n^2}
-\end{align*}
-and the third inequality follows from
-\begin{align*}
-\mathbf{Pr} \left[ X < \frac{n}{2} - \sqrt{2n \ln n} \right]
-&= \mathbf{Pr} \left[ X < \left( 1 - \frac{2\sqrt{2n \ln n}}{n} \right)\frac{n}{2} \right]
-< e^{-\frac{n}{2} \left( \frac{2\sqrt{2n \ln n}}{n}\right)^2\frac{1}{2}} \\
-&< e^{-\frac{n}{4} \left( \frac{8n \ln n}{n^2}\right)} = e^{-2\ln n} = 1/n^2
-\end{align*}
-where the first inequality follows from applying the second Chernoff bound to the inequality with $\delta=\frac{2\sqrt{2n \ln n}}{n}$ and $\mu=n/2$. Finally applying an union bound over all rows we get
-\begin{align*}
-\mathbf{Pr} \left[ || A\overline{b} ||_{\infty} > 2\sqrt{2n \ln n} \right] \geq \sum_{i=1}^n \mathbf{Pr} \left[ | A_i\overline{b} | > 2\sqrt{2n \ln n} \right] \leq \sum_{i=1}^n \frac{2}{n^2} = \frac{2}{n}
-\end{align*}
 
 \end{document}

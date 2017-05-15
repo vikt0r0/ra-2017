@@ -1,0 +1,142 @@
+\documentclass[12pt]{article}
+
+% This first part of the file is called the PREAMBLE. It includes
+% customizations and command definitions. The preamble is everything
+% between \documentclass and \begin{document}.
+
+\usepackage[margin=1in]{geometry}  % set the margins to 1in on all sides
+\usepackage{graphicx}              % to include figures
+\usepackage{amsmath,bm}            % great math stuff
+\usepackage{amsfonts}              % for blackboard bold, etc
+\usepackage{amsthm}                % better theorem environments
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage[]{algorithm2e}
+\usepackage{parskip} 			   % no paragraph indentation
+
+\usetikzlibrary{arrows,automata}
+
+
+% various theorems, numbered by section
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{dfn}[thm]{Definition}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{conj}[thm]{Conjecture}
+
+\DeclareMathOperator{\id}{id}
+
+\newcommand{\bd}[1]{\mathbf{#1}}  % for bolding symbols
+\newcommand{\RR}{\mathbb{R}}      % for Real numbers
+\newcommand{\ZZ}{\mathbb{Z}}      % for Integers
+\newcommand{\col}[1]{\left[\begin{matrix} #1 \end{matrix} \right]}
+\newcommand{\comb}[2]{\binom{#1^2 + #2^2}{#1+#2}}
+
+\lstset{ % General setup for the package
+    language={[LaTeX]TeX},
+    basicstyle=\footnotesize\sffamily,
+    tabsize=4,
+    columns=fixed,
+    keepspaces,
+    commentstyle=\color{red},
+    keywordstyle=\color{blue},
+    xleftmargin=.1\textwidth,
+    xrightmargin=.1\textwidth
+}
+
+\begin{document}
+
+\nocite{*}
+
+
+\title{Randomized Algorithms \\
+       Assignment 3}
+
+\author{Viktor Hansen \& Simon Rueskov Schleicher}
+
+\maketitle
+
+\begin{abstract}
+  This is the third weekly assignment for the Randomized Algorithms course offered at The Department of Computer Science, Uni. Copenhagen.
+\end{abstract}
+
+\pagebreak
+
+\section*{Exercise 3.10}
+We wish to find an upper bound on $\mathbf{Pr} \left[ X > \beta n \ln n \right] \leq \mathbf{Pr} \left[ \left| X - \mu_X \right| \geq \beta n \ln n - \mu_X \right]$. Now, setting $t\sigma_X = \beta n \ln n - \mu_X$, we get $t = \frac{\beta n \ln n - \mu_X}{\sigma_X}$. Inserting and applying Chebyshev's inequality yields
+\begin{align*}
+\mathbf{Pr} \left[ \left| X - \mu_X \right| \geq \frac{\beta n \ln n - \mu_X}{\sigma_X} \sigma_X \right] \leq \frac{\sigma_X^2}{(\beta n \ln n - \mu_X)^2}
+\end{align*}
+Inserting $\mu_X = \mathbf{E} \left[ X \right] = n \ln n + O(n)$ gives
+\begin{align*}
+\frac{\sigma_X^2}{(\beta n \ln n - \mu_X)^2} &= \frac{\sigma_X^2}{(\beta n \ln n - n \ln n - cn)^2} = \frac{\sigma_X^2}{(n \ln n(\beta - 1) - cn)^2}
+\end{align*}
+
+\pagebreak
+
+\section*{Summary}
+\subsection*{Coupon Collector's Problem}
+Given $n$ types of coupons, a trial means picking a coupon independently and at random. Let $X = \text{\# of trials to get all } n \text{ coupon types}$. For $i=0, \hdots, n-1$, the $i$th epoch consists of the trials starting just after the $i$th success and ending in the $(i+1)$th success. Define $X_i = \text{\# of trials in the } i\text{th epoch.}$, then $X=\sum_{i=0}^{n-1} X_i$. Now
+\begin{align*}
+\mathbf{E}\left[ X \right] = \sum_{i=0}^{n-1} \mathbf{E}\left[ X_i \right] = \sum_{i=0}^{n-1} \frac{n}{n-i} = \sum_{i=1}^{n} \frac{n}{i} =  n \sum_{i=1}^{n} \frac{1}{i} = n H_{n} = n \ln n + O(n)
+\end{align*}
+Let $\varepsilon_i^r$ denote the event that coupon type $i$ is not picked in the first $r$ trials. Then
+\begin{align*}
+\mathbf{Pr}\left[ \varepsilon_i^r \right] = \left(1-\frac{1}{n}\right)^r \leq e^{-r/n}
+\end{align*}
+Pick $r=\beta n \ln n$, where $\beta$ is a constant, then $\mathbf{Pr}\left[ \varepsilon_i^r \right] \leq e^{-\beta \ln n} = n^{-\beta}$ and
+\begin{align*}
+\mathbf{Pr}\left[ \cup_{i=1}^n \right] \leq \sum_{i=1}^n \mathbf{Pr}\left[ \varepsilon_i^r \right] \leq n^{1-\beta}
+\end{align*}
+For $\beta=2$, we get $\mathbf{Pr}\left[ \cup_{i=1}^n \right] \leq 1/n$.
+
+\subsection*{Chernoff Bounds}
+Given $n$ independent indicator variables $X_1, \hdots, X_n$, $p_i = \mathbf{Pr}\left[ X_i = 1 \right]$, $0 < p_i < 1$ for $i=1, \hdots, n$. Let $X=\sum_{i=1}^n X_i$ and $\mu = \mathbf{E} \left[ X \right] = \sum_{i=1}^n p_i$. Then
+\begin{align*}
+\mathbf{Pr}\left[ X > (1-\delta)\mu_X \right]
+&= \mathbf{Pr}\left[ e^{tX} > e^{t(1-\delta)\mu_X} \right]
+< \frac{\mathbf{E}\left[ e^{tX} \right]}{e^{t(1-\delta)\mu_X}}
+= \frac{\prod_{i=1}^n \mathbf{E}\left[ e^{tX_i} \right]}{e^{t(1-\delta)\mu_X}} \\
+&= \frac{\prod_{i=1}^n \left( p_i e^t + 1-p_i \right)}{e^{t(1-\delta)\mu_X}}
+= \frac{\prod_{i=1}^n \left( 1 + p_i (e^t - 1) \right)}{e^{t(1-\delta)\mu_X}} \\
+&\leq \frac{\prod_{i=1}^n e^{p_i (e^t-1)}}{e^{t(1-\delta)\mu_X}}
+\leq \left( \frac{e^{(e^t-1)}}{e^{t(1-\delta)}} \right)^{\mu_X}
+= \left( \frac{e^{\delta}}{\left( 1 + \delta \right)^{1+\delta}} \right)^{\mu_X}
+\end{align*}
+Furthermore
+\begin{align*}
+\mathbf{Pr}\left[ X < (1-\delta)\mu_X \right]
+&= \mathbf{Pr}\left[ -X < -(1-\delta)\mu_X \right]
+= \mathbf{Pr}\left[ e^{-tX} < e^{-t(1-\delta)\mu_X} \right] \\
+&< \left( \frac{e^{-\delta}}{\left( 1-\delta \right)^{1-\delta}} \right)^\mu
+= \left( \frac{e^{-\delta}}{e^{\left( 1-\delta \right) \ln (1-\delta)}} \right)^\mu \\
+&< \left( \frac{e^{-\delta}}{e^{\left( 1-\delta \right)\left( -\delta - \frac{\delta^2}{2} \right)}} \right)^\mu
+=  \left( \frac{e^{-\delta}}{e^{-\delta - \frac{\delta^2}{2} + \delta^2 + \frac{\delta^3}{2}}  } \right)^\mu \\
+&<  \left( \frac{e^{-\delta}}{e^{-\delta - \frac{\delta^2}{2} + \delta^2}  } \right)^\mu = \left( \frac{1}{e^{-\frac{\delta^2}{2} + \delta^2}  } \right)^\mu
+= \left( e^{\frac{\delta^2}{2} - \delta^2} \right)^\mu \\
+&= e^{\mu\frac{\delta^2}{2} - \mu\delta^2} = e^{-\mu\sigma^2/2}
+\end{align*}
+
+\subsection*{Set-Balancing}
+Given a matrix $A \in \left\{ 0,1 \right\}^{n \times n}$, find a vector $\overline{b} \in \left\{ -1, 1 \right\}^n$ s.t. $|| A\overline{b} ||_{\infty}$ is minimized. Pick each entry of $\overline{b}$ to be $1$ with probability $1/2$ and $-1$ otherwise. Now, $\mathbf{E} \left[ || A\overline{b} ||_{\infty} \right] = 0$. Consider a row $i$, $A_{i}$, of $A$, and assume for now that all entries are 1. Let $X$ be the \# of 1's in $\overline{b}$. Now
+\begin{align*}
+\mathbf{Pr} \left[ | A_i\overline{b} | > 2\sqrt{2n \ln n} \right] &\leq \mathbf{Pr} \left[ X > \frac{n}{2} + \sqrt{2n \ln n} \; \lor \; X < \frac{n}{2} - \sqrt{2n \ln n} \right] \\
+&\leq \mathbf{Pr} \left[ X > \frac{n}{2} + \sqrt{2n \ln n} \right] + \mathbf{Pr} \left[ X < \frac{n}{2} - \sqrt{2n \ln n} \right] \\
+&\leq \frac{1}{n^2} + \frac{1}{n^2} = \frac{2}{n^2}
+\end{align*}
+and the third inequality follows from
+\begin{align*}
+\mathbf{Pr} \left[ X < \frac{n}{2} - \sqrt{2n \ln n} \right]
+&= \mathbf{Pr} \left[ X < \left( 1 - \frac{2\sqrt{2n \ln n}}{n} \right)\frac{n}{2} \right]
+< e^{-\frac{n}{2} \left( \frac{2\sqrt{2n \ln n}}{n}\right)^2\frac{1}{2}} \\
+&< e^{-\frac{n}{4} \left( \frac{8n \ln n}{n^2}\right)} = e^{-2\ln n} = 1/n^2
+\end{align*}
+where the first inequality follows from applying the second Chernoff bound to the inequality with $\delta=\frac{2\sqrt{2n \ln n}}{n}$ and $\mu=n/2$. Finally applying an union bound over all rows we get
+\begin{align*}
+\mathbf{Pr} \left[ || A\overline{b} ||_{\infty} > 2\sqrt{2n \ln n} \right] \geq \sum_{i=1}^n \mathbf{Pr} \left[ | A_i\overline{b} | > 2\sqrt{2n \ln n} \right] \leq \sum_{i=1}^n \frac{2}{n^2} = \frac{2}{n}
+\end{align*}
+
+\end{document}
