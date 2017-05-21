@@ -72,7 +72,11 @@ We wish to find an upper bound on $\mathbf{Pr} \left[ X > \beta n \ln n \right] 
 \end{align*}
 Inserting $\mu_X = \mathbf{E} \left[ X \right] = n \ln n + O(n)$ gives
 \begin{align*}
-\frac{\sigma_X^2}{(\beta n \ln n - \mu_X)^2} &= \frac{\sigma_X^2}{(\beta n \ln n - n \ln n - cn)^2} = \frac{\sigma_X^2}{(n \ln n(\beta - 1) - cn)^2}
+\frac{\sigma_X^2}{(\beta n \ln n - \mu_X)^2} &= \frac{\sigma_X^2}{(\beta n \ln n - n \ln n - O(n))^2} = \frac{\sigma_X^2}{(n \ln n(\beta - 1) - O(n))^2} \\
+&= \frac{\sigma_X^2}{n^2 (\ln n)^2 (\beta - 1)^2 - 2 O(n^2) \ln n (\beta - 1) + O(n^2)} \\
+&= \frac{\sigma_X^2}{n^2} \frac{1}{(\ln n)^2(\beta-1)^2-2O(1) \ln n (\beta-1) + O(1)} \\
+&= \frac{\sigma_X^2}{n^2} \frac{1}{(\ln n)^2(\beta-1)^2-(\beta-1)O(\ln n)} \\
+&\leq \frac{\pi^2}{(\beta-1)^2 O((\ln n)^2)-(\beta-1)O(\ln n)}
 \end{align*}
 
 \pagebreak
