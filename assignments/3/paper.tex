@@ -72,12 +72,40 @@ We wish to find an upper bound on $\mathbf{Pr} \left[ X > \beta n \ln n \right] 
 \end{align*}
 Inserting $\mu_X = \mathbf{E} \left[ X \right] = n \ln n + O(n)$ gives
 \begin{align*}
-\frac{\sigma_X^2}{(\beta n \ln n - \mu_X)^2} &= \frac{\sigma_X^2}{(\beta n \ln n - n \ln n - O(n))^2} = \frac{\sigma_X^2}{(n \ln n(\beta - 1) - O(n))^2} \\
-&= \frac{\sigma_X^2}{n^2 (\ln n)^2 (\beta - 1)^2 - 2 O(n^2) \ln n (\beta - 1) + O(n^2)} \\
-&= \frac{\sigma_X^2}{n^2} \frac{1}{(\ln n)^2(\beta-1)^2-2O(1) \ln n (\beta-1) + O(1)} \\
-&= \frac{\sigma_X^2}{n^2} \frac{1}{(\ln n)^2(\beta-1)^2-(\beta-1)O(\ln n)} \\
-&\leq \frac{\pi^2}{(\beta-1)^2 O((\ln n)^2)-(\beta-1)O(\ln n)}
+\frac{\sigma_X^2}{(\beta n \ln (n) - \mu_X)^2} &= \frac{\sigma_X^2}{(\beta n \ln (n) - n \ln(n) - O(n))^2} = \frac{\sigma_X^2}{(n \ln(n)(\beta - 1) - O(n))^2} \\
+&= \frac{\sigma_X^2}{n^2 \ln^2(n) (\beta - 1)^2 + O(n^2) - O(n^2 \ln(n))} \\
+&\leq \frac{\sigma_X^2}{O(n^2 \ln^2(n)) - O(n^2 \ln(n))} \\
+&= \frac{\sigma_X^2}{O(n^2 \ln^2(n)} \\
+&\leq \lim_{n \rightarrow \infty} \left( O \left( \frac{\sigma_X^2}{n^2} \right) \right) \frac{1}{O(\ln^2(n)} \\
+& = O \left( \frac{1}{\ln^2(n)} \right)
 \end{align*}
+The last two steps follow from $\sigma_X^2/n^2$ being monotonically increasing and converging for large enough $n$.
+
+\section*{Problem 3}
+Consider a treap $T=(e_1, e_2, ..., e_n) = ((v_1,p_1), (v_2,p_2), ..., (v_n,p_n))$ with an element $e_k = (v_k, -\infty) \in T$ of rank $k$. We wish to analyze the expected depth of $e_j$ in $T$. Let $X_i = 1$ if $e_i$ is an ancestor of $e_k$ and $X_i=0$ otherwise. Then the depth of $e_k$ is given by $X=1 + \sum_{i=1}^{n}X_i$ and
+\begin{align*}
+\mathbf{E}\left[ X \right] = 1 + \mathbf{E}\left[ \sum\limits_{i=1}^{n}X_i \right] = 1 + \sum\limits_{i=1}^{n}\mathbf{E}\left[X_i \right] 
+\end{align*}
+Since $e_k$ has rank $k$, $e_i$ is an ancestor of $e_k$ exactly when $e_i$ has the highest priority of the elements $e_i, ..., e_k$, when $i < k$ and $e_k, ..., e_i$ otherwise. Since the priorities are chosen at random, the probabilities of these events are given by $1/(k-i)$ and $1/(i-k)$, respectively. We then have $\mathbf{Pr}\left[ X_i = 1 \right] = 1 / |i-k|$ and
+\begin{align*}
+1 + \sum\limits_{i=1}^{n}\mathbf{E}\left[X_i \right] &= 1 + \sum\limits_{i=1}^{n}\mathbf{Pr}\left[X_i = 1 \right] \\
+&= 1 + \sum\limits_{i=1}^{n} 1 / |i-k| \\
+&= 1 +\sum\limits_{i=1}^{k-1} \frac{1}{k-i} + \sum\limits_{i=k+1}^{n} \frac{1}{i-k} \\
+&= 1 +H_{k-1} + H_{n-k}
+\end{align*}
+Subtracting the expected depth of $e_k$ from the expected depth of an element with rank $k$ and a random priority (lemma 8.6) yields
+\begin{align*}
+1 + H_{k-1} + H_{n-k} - H_k - H_{n-k+1} + 1 &= 1 + (H_{k-1} - H_k) + (H_{n-k} - H_{n-k+1}) + 1 \\
+&= 1 -\frac{1}{k} +1 - \frac{1}{n-k+1} \\
+&= \mathbf{E}\left[ R_x \right] + \mathbf{E}\left[ L_x \right]
+\end{align*}
+which exactly is the expected number of rotations required when deleting an element of rank $k$. This makes sense, because when deleting the element, we change its priority to $\infty$ and make rotations until it reaches the bottom. Each rotation moves it down 1 level. So the depth of the bottom (when the priority is negative infinity) should be the depth when we started plus the number of rotations.
+
+
+\section*{Problem 4}
+Consider the 2-level hashing scheme with $h_a$ used for the hash-function. Pick random, odd $a \in [2^w]$, and let $u = 2^w$ and $t = 2^\ell$ where $\ell \leq w$. Let $C_{x,y} = h_a(x) == h_a(y)$, i.e. if there is a collision between $x$ and $y$ and $C = \sum_{x \neq y} C_{x,y}$ denote the total number of collisions. Then $\mathbf{E} \left[ C \right] = \mathbf{E}\left[ \sum_{x \neq y} C_{x,y} \right] \leq \sum_{x \neq y} 2/2^{\ell} = \binom{n}{2}2/2^\ell = n(n-1)/2^\ell$. For a set of size $n$, we choose $\ell = \lfloor \log_2(n-1) \rfloor + 2$, for which $\mathbf{E}[C] = n(n-1)/2^{\lfloor \log_2(n-1) \rfloor + 2} \leq n(n-1)/2^{\log_2(n-1) + 1} = n/2$. Pick $h_a$ s.t. $C \leq n$. Then from applying Markov's inequality we get that $\mathbf{Pr}[X \geq n] \leq \frac{n/2}{n} = 1/2$, so we expect at most 2 tries before $C \leq n$. Letting $t_i = n_i(n_i-1)$ where $n_i$ is the number of collisions in bucket $i$. The amount of space required by this method is given by $\Sigma_{i \in [2^\ell]}t_i = \Sigma_{i \in [2^\ell]} 2 \binom{n_i}{2} = 2 \Sigma_{i \in [2^\ell]} \binom{n_i}{2} = 2C \leq 2n = O(n)$.
+
+
 
 \pagebreak
 
@@ -142,5 +170,28 @@ where the first inequality follows from applying the second Chernoff bound to th
 \begin{align*}
 \mathbf{Pr} \left[ || A\overline{b} ||_{\infty} > 2\sqrt{2n \ln n} \right] \geq \sum_{i=1}^n \mathbf{Pr} \left[ | A_i\overline{b} | > 2\sqrt{2n \ln n} \right] \leq \sum_{i=1}^n \frac{2}{n^2} = \frac{2}{n}
 \end{align*}
+
+\subsection*{Hashing}
+Consider $X \subseteq [u]$, $|X| = n$ keys drawn from universe $[u] = [1, \hdots, u-1]$. We wish to store $X$ so as to decide $x \in X$ by using a hash-function $h : [u] \rightarrow [t]$. We say $h$ is universal if given $\forall x,y \in [u]$ and $x \neq y$ then $\mathbf{Pr}\left[ h(x) = h(y) \right] \leq 1/t$. The following are examples of hash functions:
+\begin{enumerate}
+\item Pick a prime $p \geq u$ and $a \in [p]_+ = [1, \hdots, p-1]$, $b \in [u]$ uniformly at random. Then $h_{a,b}(x) = ((ax + b) \mod p) \mod t$, then $h_{a,b}$ is universal.
+\item Let $u=2^w$, $t=2^\ell$ and $\ell \leq w$. Pick a random odd $a \in [2^w]$. Then $h_a(x) = (a * x) \gg (w - \ell)$. Then $\mathbf{Pr}\left[ h_a(x) = h_a(y) \right] \leq 2/2^\ell$.
+\end{enumerate}
+\paragraph{Naive hashing} We want a worst-case query time of $O(1)$ for deciding the membership problem. Given a hash-function $h$, we construct an array $T[t]$, and set $T[h(x)] = x$ for each $x \in X$. Then $x \in X \Leftrightarrow T[h(x)] = x$. We pick $t$ large enough to expect no collisions. Let $C_{x,y} = h(x) == h(y)$, then the total number of collisions is denoted by $C = \sum_{x \neq y} C_{x,y}$. Now $\mathbf{E}\left[ C \right] = \mathbf{E}\left[ \sum_{x \neq y} C_{x,y} \right] \leq \sum_{x \neq y} 1/t = \binom{n}{2}/t$. By picking $t=n(n-1)=2\binom{n}{2}$, we get $\mathbf{Pr} \left[ C \geq 1 \right] \leq \mathbf{E}\left[ C \right] / 1 \leq 1/2$. If $C \geq 1$, then there is some collision and we try with a new $h$. This approach uses $O(n^2)$ space.
+
+\paragraph{Two-level hashing} Let $n=t$ and $h$ be a hash function. We construct a hashmap as follows:
+
+\begin{algorithm}[H]
+ \For{each element $i \in [t]$}{
+  store $B_i = \left\{ x \in X \; | \; h(x) = i \right\}$
+  }
+ \caption{Two-level hashing algorithm}
+\end{algorithm}
+To answer queries of the type $y \in X$, we can check $y \in B_{h(y)}$. Note that $\mathbf{E} \left[ |B_{h(y)}| \right] = n/t$. Pick $t = n-1$. Let $C$ be defined as before. Then $\mathbf{E} \left[ C \right] = \binom{n}{2}/t = n/2$. If $C > n$, try new $h$. Now $C \leq n$. For $t_i=n_i(n_i-1) = 2\binom{n_i}{2}$, use array $T_i[t_i]$ for each bucket. Now determining whether $y \in X \Leftrightarrow T_i[h_i(y)] = T[h(y)][h_i(y)]$, assuming $h_i$ has no collisions. Otherwise choose a new $h_i$. The space required by this approach is
+\begin{align*}
+\sum_{i \in [t]} t_i = \sum_{i \in [t]}2\binom{n_i}{2} = 2\sum_{i \in [t]}\binom{n_i}{2} = 2C \leq 2n
+\end{align*}
+which is linear in $n$.
+
 
 \end{document}
