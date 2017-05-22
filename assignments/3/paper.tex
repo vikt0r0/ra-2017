@@ -65,8 +65,8 @@
 
 \pagebreak
 
-\section*{Exercise 3.10}
-We wish to find an upper bound on $\mathbf{Pr} \left[ X > \beta n \ln n \right] \leq \mathbf{Pr} \left[ \left| X - \mu_X \right| \geq \beta n \ln n - \mu_X \right]$. Now, setting $t\sigma_X = \beta n \ln n - \mu_X$, we get $t = \frac{\beta n \ln n - \mu_X}{\sigma_X}$. Inserting and applying Chebyshev's inequality yields
+\section*{1)}
+We wish to determine an upper bound on $\mathbf{Pr} \left[ X > \beta n \ln n \right] \leq \mathbf{Pr} \left[ \left| X - \mu_X \right| \geq \beta n \ln n - \mu_X \right]$. Now, setting $t\sigma_X = \beta n \ln n - \mu_X$, we get $t = \frac{\beta n \ln n - \mu_X}{\sigma_X}$. Inserting and applying Chebyshev's inequality yields
 \begin{align*}
 \mathbf{Pr} \left[ \left| X - \mu_X \right| \geq \frac{\beta n \ln n - \mu_X}{\sigma_X} \sigma_X \right] \leq \frac{\sigma_X^2}{(\beta n \ln n - \mu_X)^2}
 \end{align*}
@@ -81,7 +81,12 @@ Inserting $\mu_X = \mathbf{E} \left[ X \right] = n \ln n + O(n)$ gives
 \end{align*}
 The last two steps follow from $\sigma_X^2/n^2$ being monotonically increasing and converging for large enough $n$.
 
-\section*{Problem 3}
+\section*{2)}
+
+We start by analyzing the root-to-leaf paths in the recursion for QuickSort. We want to show that a path from the root to a leaf is $O(\lg n)$ with high probability. Looking at the path from the root to a specific leaf, we define $X_i$ to be 1 if the node on level $i$ splits the current array into 2 parts, where one of them are at most 3 times bigger than the other. Define $p_i$ to be the probability of $X_i$ being 1, which happens if the pivot was chosen in the middle half (between $\frac{1}{4}$ and $\frac{3}{4}$), so for every $i$ we have $p_i=\frac{1}{2}$. Define $X=\Sigma_{i=1}^k X_i$. So $X$ is the number of good splits in the first $k$ levels. We want to show that for $k=O(\lg n)$ there is a high chance that we have reached a leaf. In the worst case, when we have $X_i=1$ we reduce the array to $\frac{3}{4}$, so when $X\geq lg_{\frac{3}{4}}n$ we know that we have reached a leaf. The probability that we have not reached a leaf in the first $O(\lg n)$ steps is thus (by using Chernoff Bound) $\mathbf{Pr}[X < \log_{\frac{3}{4}}n]=\mathbf{Pr}[X<(1-\delta)O(\lg n)] < exp(-O(\lg n)\delta^2/2)=O(m^{-1})$. That is, for large $n$ there is a high probability that we will have reached a leaf in $O(\lg n)$ steps. So we can conclude that RandQS runs in time $O(n \lg n)$.
+
+
+\section*{3)}
 Consider a treap $T=(e_1, e_2, ..., e_n) = ((v_1,p_1), (v_2,p_2), ..., (v_n,p_n))$ with an element $e_k = (v_k, -\infty) \in T$ of rank $k$. We wish to analyze the expected depth of $e_j$ in $T$. Let $X_i = 1$ if $e_i$ is an ancestor of $e_k$ and $X_i=0$ otherwise. Then the depth of $e_k$ is given by $X=1 + \sum_{i=1}^{n}X_i$ and
 \begin{align*}
 \mathbf{E}\left[ X \right] = 1 + \mathbf{E}\left[ \sum\limits_{i=1}^{n}X_i \right] = 1 + \sum\limits_{i=1}^{n}\mathbf{E}\left[X_i \right] 
@@ -102,10 +107,17 @@ Subtracting the expected depth of $e_k$ from the expected depth of an element wi
 which exactly is the expected number of rotations required when deleting an element of rank $k$. This makes sense, because when deleting the element, we change its priority to $\infty$ and make rotations until it reaches the bottom. Each rotation moves it down 1 level. So the depth of the bottom (when the priority is negative infinity) should be the depth when we started plus the number of rotations.
 
 
-\section*{Problem 4}
-Consider the 2-level hashing scheme with $h_a$ used for the hash-function. Pick random, odd $a \in [2^w]$, and let $u = 2^w$ and $t = 2^\ell$ where $\ell \leq w$. Let $C_{x,y} = h_a(x) == h_a(y)$, i.e. if there is a collision between $x$ and $y$ and $C = \sum_{x \neq y} C_{x,y}$ denote the total number of collisions. Then $\mathbf{E} \left[ C \right] = \mathbf{E}\left[ \sum_{x \neq y} C_{x,y} \right] \leq \sum_{x \neq y} 2/2^{\ell} = \binom{n}{2}2/2^\ell = n(n-1)/2^\ell$. For a set of size $n$, we choose $\ell = \lfloor \log_2(n-1) \rfloor + 2$, for which $\mathbf{E}[C] = n(n-1)/2^{\lfloor \log_2(n-1) \rfloor + 2} \leq n(n-1)/2^{\log_2(n-1) + 1} = n/2$. Pick $h_a$ s.t. $C \leq n$. Then from applying Markov's inequality we get that $\mathbf{Pr}[X \geq n] \leq \frac{n/2}{n} = 1/2$, so we expect at most 2 tries before $C \leq n$. Letting $t_i = n_i(n_i-1)$ where $n_i$ is the number of collisions in bucket $i$. The amount of space required by this method is given by $\Sigma_{i \in [2^\ell]}t_i = \Sigma_{i \in [2^\ell]} 2 \binom{n_i}{2} = 2 \Sigma_{i \in [2^\ell]} \binom{n_i}{2} = 2C \leq 2n = O(n)$.
+\section*{4)}
+Consider the 2-level hashing scheme with $h_a$ used for the hash-function. Pick random, odd $a \in [2^w]$, and let $u = 2^w$ and $t = 2^\ell$ where $\ell \leq w$.
 
+\begin{algorithm}[H]
+ \For{each element $i \in [t]$}{
+  store $B_i = \left\{ x \in X \; | \; h(x) = i \right\}$
+  }
+ \caption{Two-level hashing algorithm}
+\end{algorithm}
 
+Each bucket $B_i$ is internally represented by a secondary hash-table, $T_i[t_i]$. Let $C_{x,y} = h_a(x) == h_a(y)$, i.e. if there is a collision between $x$ and $y$ and $C = \sum_{x \neq y} C_{x,y}$ denote t he total number of collisions. Then $\mathbf{E} \left[ C \right] = \mathbf{E}\left[ \sum_{x \neq y} C_{x,y} \right] \leq \sum_{x \neq y} 2/2^{\ell} = \binom{n}{2}2/2^\ell = n(n-1)/2^\ell$. For a set of size $n$, we choose $\ell = \lfloor \log_2(n-1) \rfloor + 2$, for which $\mathbf{E}[C] = n(n-1)/2^{\lfloor \log_2(n-1) \rfloor + 2} \leq n(n-1)/2^{\log_2(n-1) + 1} = n/2$. Pick $h_a$ s.t. $C \leq n$. Then from applying Markov's inequality we get that $\mathbf{Pr}[X \geq n] \leq \frac{n/2}{n} = 1/2$, so we expect at most 2 tries before $C \leq n$. Letting $t_i = 2^{\lfloor \log_2 n_i(n_i-1) \rfloor} \leq 2^{\log_2 n_i(n_i-1)+1} = 2n_i(n_i-1) = 4 \binom{n_i}{2}$ where $n_i$ is the number of collisions in bucket $i$. Another hash function $h_{a_i}$ is chosen so that it perfectly hashes the elements of bucket $i$ into the hash-table $T_i$. The amount of space required by this method is given by $\Sigma_{i \in [2^\ell]}t_i = \Sigma_{i \in [2^\ell]} 4 \binom{n_i}{2} = 4 \Sigma_{i \in [2^\ell]} \binom{n_i}{2} = 4C \leq 4n = O(n)$.
 
 \pagebreak
 
@@ -193,5 +205,17 @@ To answer queries of the type $y \in X$, we can check $y \in B_{h(y)}$. Note tha
 \end{align*}
 which is linear in $n$.
 
+\subsection*{Random Treaps}
+A treap is a special form of a binary search tree that is also a heap.\\
+When we need to store items with totally ordered keys, and later search for them, a binary search tree is a good option for a data structure. But there's many different ways to build a binary tree with a set of items. The more balanced a binary tree is, the better, because we need less time to search for item. Treaps are a randomized way of building a balanced binary tree.\\
+When building a treap, each item gets a random number as their priority, and then a tree is build, that is a binary search tree with respect to the keys and a heap with respect to the priorities.\\
+Proof that such a tree exists: When given a set of items with keys $k_i$ and priorities $p_i$, we can construct such treap: First we take the item with the highest priority. We call that item $x$. $x$ has to be at the root of the tree, because it has the highest priority. All items with key less than $k_x$ has to be in the left subtree, and all items with keys more than $k_x$ has to be in the right subtree. Now we can recursively build both the left subtree and the right subtree (the items to the left and right with the highest priorities has to be at the root of the subtrees, and we can divide the remaining items according to the keys). This proves that from any given set of items with keys and priorities, we can construct a treap containing those items, and furthermore it proves that it can be done in a unique way.\\
+With random priorities, treaps work very much like the Quicksort algorithm. Byt choosing random priorities to each of the items, it becomes random which of the items gets the highest priority. That item has to be in the root of the tree, and all other items has to be in either the left or right subtree according to whether their keys are less or more than the key of the item with the highest priority. This works in the same way as choosing a random item and partitioning according to it in the Quicksort algorithm. After the partitioning, we do the same recursively for both subtrees in the treap individually, like we do the same recursively for both partitions in the Quicksort algorithm. So treaps and the quicksort algorithm work in the same way. Since we know that the quicksort algorithm has expected $O(logn)$ layers, we can conclude that a random treap gets and expected height of $O(logn)$.\\
+\textbf{Lemma 8.6:} Let T be a random treap for a set S of size n. For an element $x\in S$ having rank k, $$E[depth(x)]=H_k+H_{n-k+1}-1$$
+$L_x$ = length of the left spine of the right sub-tree of x.\\
+$R_x$ = lenght of the right spine of the left sub-tree of x.\\
+\textbf{Lemma 8.7:} Let T be a random treap for a set S of size n. For an element $x\in S$ of rank k, $$E[R_x]=1-\frac{1}{k}$$ and $$E[L_x]=1-\frac{1}{n-k+1}.$$
+\textbf{Theorem 8.8:} Let T be a random treap for a set S of size n. \begin{enumerate}\item The expected time for a FIND, INSERT, or DELETE operation on T is $O(logn)$.\item The expected number of rotations required during an INSERT or DELETE operation is at most 2.\item The expected time for a JOIN, PASTE, or SPLIT operation involving sets $S_1$ and $S_2$ of sizes n and m, respectively, is $O(logn+logm)$.
+\end{enumerate}
 
 \end{document}
