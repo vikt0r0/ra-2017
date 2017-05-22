@@ -79,6 +79,12 @@ Inserting $\mu_X = \mathbf{E} \left[ X \right] = n \ln n + O(n)$ gives
 &\leq \frac{\pi^2}{(\beta-1)^2 O((\ln n)^2)-(\beta-1)O(\ln n)}
 \end{align*}
 
+\section*{Problem 4.14}
+
+We start by analyzing the root-to-leaf paths in the recursion for QuickSort. We want to show that a path from the root to a leaf is $O[lgn]$ with high probability.\\
+Looking on the path from the root to a specific leaf, we define $X_i$ to be 1 if the node on level $i$ splits the current array into 2 parts, where both of them are at most 3 times bigger than the other. Define $p_i$ to be the probability of $X_i$ being 1, which happens if the pivot was chosen in the middle half (between $\frac{1}{4}$ and $\frac{3}{4}$), so for every $i$ we have $p_i=\frac{1}{2}$. Define $X=\Sigma_{i=1}^kX_i$. So $X$ is the number of good splits in the first $k$ levels. We want to show that for $k=O(lgn)$ there is a high chance that we've reached a leaf. In the worst case, when we have $X_i=1$ we reduce the array to $\frac{3}{4}$, so when $X\geq lg_{\frac{3}{4}}n$ we know that we have reached a leaf. The probability that we haven't reached a leaf in the first $O(lgn)$ steps is thus (using chernoff bound) $Pr[X<lg_{\frac{3}{4}}n]=Pr[X<(1-\delta)O(lgn)]<exp(-O(lgn)\delta^2/2)=O(m^{-1})$.
+So with high n there is a high probability that we will have reached a leaf in $O(lgn)$ steps. So we can conclude that RandQS runs in time $O(nlgn)$.
+
 \pagebreak
 
 \section*{Summary}
@@ -142,5 +148,17 @@ where the first inequality follows from applying the second Chernoff bound to th
 \begin{align*}
 \mathbf{Pr} \left[ || A\overline{b} ||_{\infty} > 2\sqrt{2n \ln n} \right] \geq \sum_{i=1}^n \mathbf{Pr} \left[ | A_i\overline{b} | > 2\sqrt{2n \ln n} \right] \leq \sum_{i=1}^n \frac{2}{n^2} = \frac{2}{n}
 \end{align*}
+
+\subsection*{Random Treaps}
+A treap is a special form of a binary search tree that is also a heap.\\
+When we need to store items with totally ordered keys, and later search for them, a binary search tree is a good option for a data structure. But there's many different ways to build a binary tree with a set of items. The more balanced a binary tree is, the better, because we need less time to search for item. Treaps are a randomized way of building a balanced binary tree.\\
+When building a treap, each item gets a random number as their priority, and then a tree is build, that is a binary search tree with respect to the keys and a heap with respect to the priorities.\\
+Proof that such a tree exists: When given a set of items with keys $k_i$ and priorities $p_i$, we can construct such treap: First we take the item with the highest priority. We call that item $x$. $x$ has to be at the root of the tree, because it has the highest priority. All items with key less than $k_x$ has to be in the left subtree, and all items with keys more than $k_x$ has to be in the right subtree. Now we can recursively build both the left subtree and the right subtree (the items to the left and right with the highest priorities has to be at the root of the subtrees, and we can divide the remaining items according to the keys). This proves that from any given set of items with keys and priorities, we can construct a treap containing those items, and furthermore it proves that it can be done in a unique way.\\
+With random priorities, treaps work very much like the Quicksort algorithm. Byt choosing random priorities to each of the items, it becomes random which of the items gets the highest priority. That item has to be in the root of the tree, and all other items has to be in either the left or right subtree according to whether their keys are less or more than the key of the item with the highest priority. This works in the same way as choosing a random item and partitioning according to it in the Quicksort algorithm. After the partitioning, we do the same recursively for both subtrees in the treap individually, like we do the same recursively for both partitions in the Quicksort algorithm. So treaps and the quicksort algorithm work in the same way. Since we know that the quicksort algorithm has expected $O(logn)$ layers, we can conclude that a random treap gets and expected height of $O(logn)$.\\
+\textbf{Lemma 8.6:} Let T be a random treap for a set S of size n. For an element $x\in S$ having rank k, $$E[depth(x)]=H_k+H_{n-k+1}-1$$
+$L_x$ = length of the left spine of the right sub-tree of x.\\
+$R_x$ = lenght of the right spine of the left sub-tree of x.\\
+\textbf{Lemma 8.7:} Let T be a random treap for a set S of size n. For an element $x\in S$ of rank k, $$E[R_x]=1-\frac{1}{k}$$ and $$E[L_x]=1-\frac{1}{n-k+1}.$$
+\textbf{Theorem 8.8:} Let T be a random treap for a set S of size n. \begin{enumerate}\item The expected time for a FIND, INSERT, or DELETE operation on T is $O(logn)$.\item The expected number of rotations required during an INSERT or DELETE operation is at most 2.\item The expected time for a JOIN, PASTE, or SPLIT operation involving sets $S_1$ and $S_2$ of sizes n and m, respectively, is $O(logn+logm)$.\end{enumerate}
 
 \end{document}
