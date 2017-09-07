@@ -1,0 +1,102 @@
+\documentclass[12pt]{article}
+
+% This first part of the file is called the PREAMBLE. It includes
+% customizations and command definitions. The preamble is everything
+% between \documentclass and \begin{document}.
+
+\usepackage[margin=1in]{geometry}  % set the margins to 1in on all sides
+\usepackage{graphicx}              % to include figures
+\usepackage{amsmath,bm}            % great math stuff
+\usepackage{amsfonts}              % for blackboard bold, etc
+\usepackage{amsthm}                % better theorem environments
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage[]{algorithm2e}
+\usepackage{parskip} 			   % no paragraph indentation
+
+\usetikzlibrary{arrows,automata}
+
+
+% various theorems, numbered by section
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{alg}[thm]{Algorithm}
+\newtheorem{dfn}[thm]{Definition}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{conj}[thm]{Conjecture}
+
+\DeclareMathOperator{\id}{id}
+
+\newcommand{\bd}[1]{\mathbf{#1}}  % for bolding symbols
+\newcommand{\RR}{\mathbb{R}}      % for Real numbers
+\newcommand{\ZZ}{\mathbb{Z}}      % for Integers
+\newcommand{\col}[1]{\left[\begin{matrix} #1 \end{matrix} \right]}
+\newcommand{\comb}[2]{\binom{#1^2 + #2^2}{#1+#2}}
+
+\lstset{ % General setup for the package
+    language={[LaTeX]TeX},
+    basicstyle=\footnotesize\sffamily,
+    tabsize=4,
+    columns=fixed,
+    keepspaces,
+    commentstyle=\color{red},
+    keywordstyle=\color{blue},
+    xleftmargin=.1\textwidth,
+    xrightmargin=.1\textwidth
+}
+
+\begin{document}
+
+\nocite{*}
+
+
+\title{Randomized Algorithms \\
+       Assignment 6}
+
+\author{Viktor Hansen \& Simon Rueskov Schleicher}
+
+\maketitle
+
+\begin{abstract}
+  This is the sixth weekly assignment for the Randomized Algorithms course offered at The Department of Computer Science, Uni. Copenhagen.
+\end{abstract}
+
+\pagebreak
+
+
+\section*{Exercise 7.4}
+If we use the fingerprint function used for polynomial identities as F, we can solve the problem in the same way, but this takes more time.\\
+With the fingerprint function described in the chapter, when we have calculated $F(X(j))$ we can calculate $F(X(j+1))$ as $F(X(j+1))=(F(X(j))-x_j*2^m)*2+x_{m+1}\text{ mod }p$, which can be done in $O(1)$ time. The reason we can do this is that if we call the m-bit integer starting at $x_j$ for $Z_j$ and the m-bit integer starting at $x_{j+1}$ for $Z_{j+1}$, then to change $Z_j$ into $Z_{j+1}$ we need to remove the first bit (by subtracting $x_j*2^m$), shift everything 1 place to the left (by multiplying with $2$) and add $x_{m+1}$. And calculating this modulo p doesn't change the result.\\
+With the fingerprint function used for polynomial identities on the other hand, all of the bits are multiplied by something different whether we're calculating $F(X(j))$ or $F(X(j+1))$, and there's no easy conversion between this. So we have to calculate for all m bits each time thus taking $O(m)$ time to get from $F(X(j))$ to $F(X(j+1))$.
+
+\section*{Problem 7.1}
+Define the multivariate polynomial $Q(x_1,...,x_n)=ABr-Cr$ where r is the vector consisting of $x_1,...,x_n$ in that order. We have $AB=C\Rightarrow ABr=Cr\Rightarrow ABr-Cr=0$ for any $r$, so we get $Q\equiv0$ if $AB=C$. If $AB\neq C$ we get $AB-C\neq0$, so there exists an $r$, where $ABr-Cr\neq0$. We therefore get $Q\equiv 0$ if and only if $AB=C$.\\
+We choose the set $S=\{0,1\}$, and get $|S|=2$. According to Theorem 7.2 (Schwartz-Zippel Theorem), if we let $r_1,...,r_n$ be chosen independently and uniformly at random from $S$, then $Pr[Q(r_1,...,r_n)=0|Q(x_1,...,x_n)\not\equiv0]\leq\frac{d}{|S|}=\frac{d}{2}$. With $d=1$ we get $Pr[Q(r_1,...,r_n)=0|Q(x_1,...,x_n)\not\equiv0]\leq\frac{1}{2}$.\\
+$AB\neq C$ is equivalent to $Q(x_1,...,x_n)\not\equiv0$. So if we assume $AB\neq C$, we get $Pr[Q(r_1,...,r_n)=0]\leq\frac{1}{2}$. From our definition of $Q$ we get $Q(r_1,...,r_n)=0\Leftrightarrow ABr-Cr=0\Leftrightarrow ABr=Cr$, so we get $Pr[Q(r_1,...,r_n)=0]\leq\frac{1}{2}\Leftrightarrow Pr[ABr=Cr]\leq\frac{1}{2}$, which is what we wanted to show.
+
+\section*{Problem 7.4}
+We call the integers in $S_1$ $s_1,...,s_n$ and the integers in $S_2$ $s_{n+1},...,s_{2n}$. We say that the lowest value of the integers in $S_1$ and $S_2$ is $m_1$ and the highest value of the integers in $S_1$ and $S_2$ is $m_2$. We define $m=m_2-m_1$. We can find $m_1$ and $m_2$ in $O(n)$ time.\\
+A way to solve the problem involving a verification of a polynomial identity, is by defining $Q(x_{m_1},...,x_{m_2})=\Sigma_{i=1}^ns_ix_{s_i}-\Sigma_{i=n+1}^{2n}s_ix_{s_i}$. A calculation of $Q$ takes $O(n+m)$ time and requires $O(m)$ space.\\
+We need to show that if $S_1$ and $S_2$ are identical in the sense that each integer occurs the same number of times in both sets, then $Q\equiv0$. We can sort each of the sets individually without changing the result of $Q$, and then we see $\Sigma_{i=1}^ns_ix_{s_i}-\Sigma_{i=n+1}^{2n}s_ix_{s_i}=\Sigma_{i=0}^ns_ix_{s_i}-s_{i+n}x_{s_{i+n}}=\Sigma_{i=0}^ns_ix_{s_i}-s_ix_{s_i}=0$. We also need to show that if $S_1$ and $S_2$ are not identical in the sense that each integer occurs the same number of times in both sets, then $Q\not\equiv0$. In this case there has to be an integer that occurs more times in $S_1$ than in $S_2$. Call this integer j. We get $Q(0,...,x_j=1,...,0)>0$, so $Q\not\equiv0$.\\
+Now we have $Q\equiv0$ if and only if $S_1$ and $S_2$ are identical in the sense that each integer occurs the same number of times in both sets, and we can use Theorem 7.2 to solve the problem.\\
+Comparing this solution with the deterministic solution given in the book, we see that if the integers in the sets has a small range ($m$ is small), then this solution is faster. But for large ranges of integers ($m$ is large) this solution is both slower and uses a lot of space.
+
+\section*{Summary}
+If we have 3 matrices $A$, $B$ and $C$, and we want to verify that $AB=C$, then we can use Theorem 7.1:\\
+\textbf{Theorem 7.1: } Let $A$, $B$ and $C$ be $n*n$ matrices over $F$ such that $AB\neq C$. Then for r chosen uniformly at random from $\{0,1\}^n$, $Pr[ABr=Cr]\leq\frac{1}{2}$.\\
+We of course also have that if $AB=C$, then $ABr=Cr$.\\
+\textbf{Theorem 7.2 (Schwartz-Zippel Theorem): } Let $Q(x_1,...,x_n)\in F[x_1,...,x_n]$ be a multivariate polynomial of total degree d. Fix any finite set $S\subseteq F$, and let $r_1,...,r_n$ be chosen independently and uniformly at random from $S$. Then $$Pr[Q(r_1,...,r_n)=0|Q(x_1,...,x_n)\not\equiv0]\leq\frac{d}{|S|}.$$
+Perfect Matchings in Graphs:\\
+\textbf{Theorem 7.3 (Edmonds' Theorem): } Let $A$ be the $n*n$ matrix obtained from $G(U,V,E)$ as follows: $A_{ij}=x_{ij}$ if $(u_i,v_j)\in E$ and $A_{ij}=0$ otherwise. Define the multivariate polynomial $Q(x_{11},x_{12},...,x_{nn})$ as being equal to det($A$). Then, G has a perfect matching if and only if $Q\not\equiv0$.\\
+Verifying Equality of Strings:\\
+Interpret the data as $n$-bit integers $a$ and $b$, by defining $a=\Sigma_{i=1}^na_i2^{i-1}$ and $b=\Sigma_{i=1}^nb_i2^{i-1}$. Define the fingerprint function $F_p(x)=x\text{ mod }p$ for a prime p. For any number k, let $\pi(k)$ be the number of distinct primes less than k. Choose a $\tau=tn\log tn$ for large t. Then we have the following Theorem:\\
+\textbf{Theorem 7.5: } $Pr[F_p(a)=F_p(b)|a\neq b]\leq\frac{n}{\pi(\tau)}=O(\frac{1}{t})$.\\
+Pattern matching:\\
+A text is a string $X=x_1x_2...x_n$ and a pattern is a string $Y=y_1y_2...y_m$, both over a fixed finite alphabet $\Sigma$, such that $m\leq n$. The pattern matching problem is to find out if m occurs anywhere in n. The simple brute force deterministic algorithm takes $O(nm)$ time. We can make a Monte Carlo algorithm to solve this problem:\\
+For any string $Z\in\{0,1\}^m$, interpret $Z$ as an $m$-bit integer and define $F_p(Z)=Z\text{ mod }p$. Assume that $p$ is chosen uniformly at random from the set of primes smaller than a threshold $\tau$. We get $Pr[F_p(Y)=F_p(X(j))|Y\neq X(j)]\leq\frac{m}{\pi(\tau)}=O\left(\frac{m\log\tau}{\tau}\right).$. $Pr[\text{a false match occurs}]=O(\frac{1}{n})$.\\
+\textbf{Theorem 7.6: } The Monte Carlo algorithm for pattern matching requires $O(n+m)$ time and has a probability of error $O(1/n)$.
+
+\end{document}

@@ -68,7 +68,42 @@
 \section*{1)}
 
 \section*{2)}
+Let $||y||$ denote the rounding of $y$ to the the nearest integer. Using this scheme will produce a feasible solution to the ILP since $||x_{i0}|| + ||x_{i1}|| = 1$ for all $i$. For some instance of the wiring problem, let $w_0$, $\hat{w}$ and $\bar{w}$ denote the optimal value of the ILP, LP-relaxation and rounded solution respectively and let $b$ be any boundary having $w_0$ wires crossing. Furthermore let $T_b=T_{b0} \cup T_{b1}$ and since $T_{b0} \cap T_{b1} = \emptyset$, we have
+\begin{align*}
+\bar{w} &= \sum_{i \in T_{b0}} || \hat{x}_{i0} || + \sum_{i \in T_{b1}} || \hat{x}_{i1} || \\
+&=\sum_{i \in T_{b}} \left( ||\hat{x}_{i0} || + ||\hat{x}_{i1}|| \right) - \sum_{i \in T_{b0}} ||\hat{x}_{i1} || - \sum_{i \in T_{b1}} ||\hat{x}_{i0} || \\
+&\leq\sum_{i \in T_{b}} \left( x_{i0} + x_{i1} \right) \\
+&=\sum_{i \in T_{b0}} x_{i0} + \sum_{i \in T_{b1}} x_{i0} + \sum_{i \in T_{b0}} x_{i1} + \sum_{i \in T_{b1}} x_{i1} \\
+&=w_0 + \sum_{i \in T_{b0}} x_{i1} + \sum_{i \in T_{b1}} x_{i0} \\
+&=w_0 + \sum_{i \in T_{b0}} x_{i0} + \sum_{i \in T_{b1}} x_{i1} - \sum_{i \in T_{b0}} 1 - \sum_{i \in T_{b1}} 1 \\
+&\leq 2w_0
+\end{align*}
 
 \section*{3)}
+The following ILP produces a solution to a set-cover instance encoded by $\mathbf{M}$:
+\begin{align*}
+\text{minimize} \;& ||\mathbf{c}||_1 \\
+\text{s.t.} \;& \mathbf{M}_{i,:} \cdot \mathbf{c} \geq 1 \; \; \; \forall i \in \left\{ 1 \hdots n \right\} \\
+\text{where} \;& \mathbf{c}_i \in \left\{ 0,1 \right\}
+\end{align*}
+A randomized algorithm for finding a set-cover first solves the $LP$ relaxation of the above problem, by relaxing the constraint that on $\mathbf{c}$ to the domain of reals and outputting a rounded solution $\overline{\mathbf{c}} \in \left\{ 0,1 \right\}^m$ where $\mathbf{Pr}\left[\overline{\mathbf{c}}_i = 1 \right] = \mathbf{c}_i$.
+
+Let $L_i = \mathbf{M}_{i,:} \cdot \overline{ \mathbf{c} }$. If we can bound the probability that a particular set is not covered, we can apply union bound to bound the probability that not all sets are covered from below. The probability that $S_i$ is not covered is given by $\mathbf{Pr}\left[ L_i < 1 \right]$. Since the LHS is the sum of independent Poisson trials, we can apply Chernoff bound. Bounding $\mu_{L_i}$ from above, we get
+\begin{align*}
+\mu_{L_i} &= \mathbf{E}\left[ \mathbf{M}_{i,:} \cdot \overline{\mathbf{c}} \right] = \mathbf{E}\left[ \sum_{j=1}^{m} \mathbf{M}_{i,j} \cdot \overline{\mathbf{c}}_j \right] = \sum_{j=1}^{m} \mathbf{M}_{i,j} \cdot \mathbf{E}\left[ \overline{\mathbf{c}}_j \right] \\
+&= \sum_{j=1}^{m} \mathbf{M}_{i,j} \cdot \mathbf{Pr}\left[ \overline{\mathbf{c}}_j = 1 \right] = \sum_{j=1}^{m} \mathbf{M}_{i,j} \cdot \mathbf{c}_j \\
+&\leq || \mathbf{c} ||_1
+\end{align*} 
+Solving $1 = (1-\delta)\mu_{L_i}$ for $\mu_{L_i}$, we get $\delta = 1-1/\mu_{L_i}$. Applying Chernoff bound
+\begin{align*}
+\mathbf{Pr}\left[ L_i < 1 \right] &\leq \exp \left[ -\frac{1}{2}||\mathbf{c}_1|| \left( 1-\frac{1}{||\mathbf{c}_1||} \right)^2 \right] \\
+&= \exp \left[ -\frac{1}{2}||\mathbf{c}_1|| \left( 1+\frac{1}{||\mathbf{c}_1||^2} - \frac{2}{||\mathbf{c}_1||} \right) \right] \\
+&= \exp \left[ -\frac{||\mathbf{c}_1||}{2}-\frac{1}{2||\mathbf{c}_1||} + 1 \right]  \\
+&= \exp \left[ -\frac{1}{2||\mathbf{c}_1||} + \frac{1}{2} \right]  \\
+\end{align*}
+Meaning that $\mathbf{Pr}\left[ L_i \geq 1 \right] > 1-e^{-m^2}$. Finally, a union bound over all $S_i$ yields
+\begin{align*}
+\mathbf{Pr}\left[ \bigcup_{i=1}^{n} L_i \geq 1 \right] \leq n (1-e^{-m^2})
+\end{align*}
 
 \end{document}

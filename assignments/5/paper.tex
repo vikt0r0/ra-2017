@@ -1,0 +1,220 @@
+\documentclass[12pt]{article}
+
+% This first part of the file is called the PREAMBLE. It includes
+% customizations and command definitions. The preamble is everything
+% between \documentclass and \begin{document}.
+
+\usepackage[margin=1in]{geometry}  % set the margins to 1in on all sides
+\usepackage{graphicx}              % to include figures
+\usepackage{amsmath,bm}            % great math stuff
+\usepackage{amsfonts}              % for blackboard bold, etc
+\usepackage{amsthm}                % better theorem environments
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage[]{algorithm2e}
+\usepackage{parskip} 			   % no paragraph indentation
+
+\usetikzlibrary{arrows,automata}
+
+
+% various theorems, numbered by section
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{alg}[thm]{Algorithm}
+\newtheorem{dfn}[thm]{Definition}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{conj}[thm]{Conjecture}
+
+\DeclareMathOperator{\id}{id}
+
+\newcommand{\bd}[1]{\mathbf{#1}}  % for bolding symbols
+\newcommand{\RR}{\mathbb{R}}      % for Real numbers
+\newcommand{\ZZ}{\mathbb{Z}}      % for Integers
+\newcommand{\col}[1]{\left[\begin{matrix} #1 \end{matrix} \right]}
+\newcommand{\comb}[2]{\binom{#1^2 + #2^2}{#1+#2}}
+
+\lstset{ % General setup for the package
+    language={[LaTeX]TeX},
+    basicstyle=\footnotesize\sffamily,
+    tabsize=4,
+    columns=fixed,
+    keepspaces,
+    commentstyle=\color{red},
+    keywordstyle=\color{blue},
+    xleftmargin=.1\textwidth,
+    xrightmargin=.1\textwidth
+}
+
+\begin{document}
+
+\nocite{*}
+
+
+\title{Randomized Algorithms \\
+       Assignment 5}
+
+\author{Viktor Hansen \& Simon Rueskov Schleicher}
+
+\maketitle
+
+\begin{abstract}
+  This is the fifth weekly assignment for the Randomized Algorithms course offered at The Department of Computer Science, Uni. Copenhagen.
+\end{abstract}
+
+\pagebreak
+
+\section*{5.3)}
+\paragraph{a)} Consider a graph $G$ with $n$ vertices and $nd/2$. Delete each vertex and its incident edges with probability $1-1/d$. Let $N_i=1$ if vertex $i$ is deleted and $N=\sum_{i=1}^{n} N_i$ be the total number of vertices after all deletions. Then
+\begin{align*}
+\mathbf{E}[N] = \sum_{i=1}^{n} \mathbf{E}[N_i] = \sum_{i=1}^{n} 1/d = n/d
+\end{align*}
+In a similar fashion, let $E_i=1$ if edge is is not deleted. Then
+\begin{align*}
+\mathbf{E}[E] &= \sum_{i=1}^{nd/2} \mathbf{E}[E_i] = \sum_{i=1}^{nd/2} 1-\mathbf{Pr}\left[ \text{edge } i \text{ belonging to a deleted node.} \right] \\
+&= \sum_{i=1}^{nd/2} 1-(1-1/d^2) \\
+&= \frac{n}{2d}
+\end{align*}
+
+\paragraph{b)} For any graph $G=(V,E)$, a trivial lower bound on the size of any independent set is $\max\left\{0,|V| - |E|\right\}$, since each edge can reduce the size of such an independent set by at most 1. Let $X$ and $Y$ denote the number of vertices and edges in $G$ after the deletion in a). Now, repeatedly pick a vertex, $v$, of $G$ and remove all its neighbours in $G$ remain and add $v$  to an initially empty set, $S$, until no vertices remain in $G$. Now $S$ is clearly an independent set, and its size is bounded from below by $X-Y$. Now
+\begin{align*}
+\mathbf{E}\left[ S \right] &\geq \mathbf{E}\left[ \max\left\{0,X-Y\right\} \right] = \mathbf{E}\left[ X \right] - \mathbf{E}\left[ Y \right] = \frac{n}{d} - \frac{n}{2d} = \frac{n}{2d}
+\end{align*}
+Since $\mathbf{E}\left[ S \right] \geq n/2d$, $S$ achieves a value of at least $n/2d$ with positive probability, by (2) of the probabilistic method. By (1) of the probabilistic method, this implies that an independent set of size at least $n/2d$ must exist.
+
+\section*{2) Show that lemma 5.11 implies corollary 5.12}
+Let $x_i = \frac{1}{d+1}$ for all $1 \leq i \leq n$. Then
+\begin{align*}
+x_i\prod_{(i,j) \in E} (1-x_j) &= \frac{1}{d+1} \left( 1-\frac{1}{d+1} \right)^{\deg(i)} \\
+&\geq \frac{1}{d+1} \left( 1-\frac{1}{d+1} \right)^{d} \\
+&\geq \frac{1}{d+1} \cdot \frac{1}{e} \geq p \geq  \mathbf{Pr} \left[ \varepsilon_i \right]
+\end{align*}
+By Lovasz Local Lemma,
+\begin{align*}
+\mathbf{Pr} \left[ \cap_{i=1}^{n} \overline{\varepsilon}_i  \right] \geq \prod_{i=1}^n \left( 1 - \frac{1}{d+1} \right) \geq \left( 1 - \frac{1}{d+1} \right)^n > 0
+\end{align*}
+when $\frac{1}{(d+1)e} \geq p \Leftrightarrow 1 \geq ep(d+1)$.
+
+\section*{3) 5.13}
+Using an approach similar to that of section 5.6, we adopt a computation-tree view of the algorithm. Each level of the tree corresponds to assigning a vertex to $A$ or $B$. If for any step, the algorithm can assign a vertex to $A$ or $B$ s.t. $\mathbf{Pr}\left[\text{\# edges crossing} < m/2\right] < 1$, the algorithm must terminate with $\text{\# edges crossing} \geq m/2$ at a leaf node. Theorem 5.1 tells us that this is the case at the root, so if we can maintain this invariant for each step, it is guaranteed to find a solution deterministically. Let $C_i, A_i, B_i$ and $U_i$ denote the size of the cut, $A$, $B$ and the set of unassigned vertices at each step $i$, for $1 \leq i \leq n$. Then $\mathbf{E}\left[ C_i \right] = \frac{1}{2} \mathbf{E} \left[ C_{i+1} | v_{i+1} \in A_{i+1} \right] + \frac{1}{2} \mathbf{E} \left[ C_{i+1} | v_{i+1} \in B_{i+1} \right]$ by employing the randomized partitioning strategy. It follows that $\mathbf{E}\left[ C_i \right] \leq \max \left\{ \mathbf{E} \left[ C_{i+1} | v_{i+1} \in A_{b+1} \right], \mathbf{E} \left[ C_{i+1} | v_{i+1} \in B_{i+1} \right] \right\}$ and thus choosing the assignment maximising the expectation can only decrease the probability of failure. The conditional expectation $\mathbf{E} \left[ C_{i+1} | v_{i+1} \in A_{i+1} \right]$ can be computed as follows:
+\begin{align*}
+\mathbf{E} \left[ C_{i+1} | v_{i+1} \in A_{i+1} \right] &= \left| A_{i+1} \times B_{i+1} \right| + \frac{1}{2} \left| U_{i+1}^2 \right| + \frac{1}{2} \left| A_{i+1} \times U_{i+1} \right|  + \frac{1}{2} \left| U_{i+1} \times B_{i+1} \right|\\
+&= \left| A_{i+1} \times B_{i+1} \right| + \frac{1}{2} |\overline{A_{i+1} \times B_{i+1}}|
+\end{align*}
+and similarly for $\mathbf{E} \left[ C_{i+1} | v_{i+1} \in B_{i+1} \right]$. Since $\mathbf{E}\left[ C_i \right] \leq \mathbf{E}\left[ C_{i+1} \right]$ for all $1 \leq i \leq n$, we conclude that the the derandomised algorithm must produce a cut of size at least $m/2$.
+\pagebreak
+
+\section*{Summary May 18th and 23rd}
+\subsection*{The Probabilistic Method}
+\begin{enumerate}
+\item If an object drawn from a universe has some property P with probability $> 0$, then some object in the universe has property P.
+\item Any random var. achieves a value of at least (resp. at most) its expected value with positive probability.
+\end{enumerate}
+
+\subsection*{Max-Cut}
+Given an undirected graph $G=(V,E)$, find a cut $V_1 \cup V_2$ of $V$ s.t. $\left\{ (u,v) \in E \; | \; u \in V_2, v \in V_2 \right\}$ is maximized. \\
+
+\begin{alg}
+For each $v \in V$, add it to $V_1$ w. prob. $1/2$, and add it to $V_2$ otherwise. \\
+\end{alg}
+
+\begin{thm}
+$G$ has a cut with at least $m/2$ edges, where $m=|E|$.
+\paragraph{Proof:} $\mathbf{E}[\text{\# edges crossing }(V_1,V_2)\text{ with above algo.}]=m/2$. Then by TPM, there exists a cut of $G$ with $\geq m/2$ edges crossing it.
+\end{thm}
+
+\subsection*{Max-SAT}
+Given boolean formula in CNF with $m$ clauses, e.g. $(x_1 \lor \neg x_2 \lor x_3) \land (x_4 \lor x_1) \land \hdots$, and assume that no clause contains more than one occurrence of each variable. Then \\
+\begin{thm}
+Any B. formula in CNF with $m$ clauses each with at least $k$ literals has an assignment that satisfies at least $m(1-2^k)$ clauses. \\
+\end{thm}
+
+\begin{alg}
+Set each variable to true with prob. $1/2$. \\
+\end{alg}
+Now, $\mathbf{Pr}[C \text{ sat. by assignment from algo.}] \geq 1-\frac{1}{2^k}$ and thus $\mathbf{E}[\text{\# clauses sat.}] \geq m(1-2^{-k})$, and the theorem follows by THM. 
+
+\paragraph{Method 1} The above is a $1/2$ approximation, i.e. $\geq m(1-2^{-k})$ clauses in expectation where each clause has $\geq k$ literals.
+
+\paragraph{Method 2} Is a $\beta_k$-approximation. Let $C_i^-$, $C_i^+$ be the sets of negated and remaining variables in clause $i$, respectively. ILP formulation:
+\begin{align*}
+\max & \sum_{\text{clause } i} z_i\\
+\text{s.t. }& \sum_{j \in C^+_i} y_j + \sum_{j \in C_i^-}(1-y_j) \geq z_i \; \forall \text{ clauses } i \\
+\text{where }& y_j,z_i \in \left\{ 0,1 \right\} \; \forall i,j
+\end{align*}
+
+\begin{alg}
+Solve linear relaxation of ILP where $\hat{y}_j, \hat{z}_i$ are fractional solutions and $\overline{y}_j$ is the rounded solution, s.t. $\mathbf{Pr}[\overline{y}_j = 1] = \hat{y}_j$. \\
+\end{alg}
+
+Consider a clause $i$ with $k$ literals. Assume that $C_i^- = \emptyset$. Then
+\begin{align*}
+\mathbf{\text{clause } i \text{ sat.}} &=1-\prod_{j \in C_i^+}(1-\hat{y}_j) \\
+&\geq 1-\prod_{j \in C_i^+}\left(1-\frac{\hat{z}_j}{k}\right)=1-\left(1-\frac{\hat{z}_j}{k}\right)^k \\
+&\geq\beta_k\hat{z}_i\text{, where } \beta_k=1-\left(1-\frac{1}{k}\right)^k
+\end{align*}
+Then $\mathbf{Pr}[\text{\# clauses sat. assuming every clause has at least } k \text{ literals}] \geq \sum_{\text{clause } i}\beta_k \cdot OPTLP \geq \beta_k \cdot OPT$. Thus $\sum \hat{z}_i \geq OPT$. Now, let $n_i = \mathbf{E}[\text{\# clauses sat. by method } i]$. Then \\
+\begin{thm}
+$\max \left\{ n_1, n_2 \right\} \geq \frac{3}{4} \cdot OPT$
+\paragraph{Proof:}
+\begin{align*}
+\max \left\{ n_1, n_2 \right\} &\geq \frac{n1+n2}{2} \geq \sum_k \sum_{i \in S_k} \frac{(1-2^{-k}) + \beta_k}{2} \hat{z}_i \\
+&\geq \sum_k \sum_{i \in S_k} \frac{3}{4} \hat{z}_i = \frac{3}{4} \sum_{i \in S_k}  \hat{z}_i \geq \frac{3}{4} \cdot OPT
+\end{align*}
+\end{thm}
+
+\subsection*{OR-concentrator}
+\begin{dfn}
+An $(n,d,\alpha,c)$ OR-concentrator is a bipartite graph $G=(L,R,E)$ with $|L|=|R|=n$ s.t.
+\begin{enumerate}
+\item Every vertex in $L$ has deg. $\leq d$ and 
+\item $\forall S \subseteq L : |S| \leq \alpha n \Rightarrow |N(S)| \geq c |S|$ \\
+\end{enumerate}
+\end{dfn}
+
+\begin{thm}
+Given $n \in \mathbb{N}, \; \exists (n,18,\frac{1}{3},2)$ OR-conc.
+\paragraph{Proof:} For each $v \in L$, rand. algo picks $d$ neighbours in $R$, uniformly at random and with replacement. Connect $v$ with edges to its chosen neighbours.
+
+Let $\varepsilon_S : \exists S \subseteq L, |S|=s, |N(S)| \leq cs$. Then
+\begin{align*}
+\mathbf{Pr}[\varepsilon_S]&=\binom{n}{s}\binom{n}{cs}\binom{cs}{n}^{ds} \\
+&\leq \binom{ne}{s}^s\binom{ne}{cs}^cs\binom{cs}{n}^{ds} \\
+&= \left( \binom{ne}{s}\binom{ne}{2s}^2\binom{2s}{n}^{18} \right)^s  \\
+&= \left( n^{-15} s^{15} e^3 2^{16} \right)^5 \\
+&\leq \left( n^{-15} \left( \frac{1}{3^n} \right)^{15} e^3 2^{16} \right)^5 \\
+&= \left( \left( \frac{1}{3} \right)^{-15} e^3 2^{16} \right)^5 < \left( \frac{1}{2} \right)^s
+\end{align*}
+And $\mathbf{Pr}\left[ \cup_{S=1}^{\alpha n} \varepsilon_S \right] \leq \sum_{S=1}^{\alpha n} \left(\frac{1}{2}\right)^S < 1$. By TPM, an OR-concentrator exists with positive probability.
+\end{thm}
+
+\subsection*{Probability amplification}
+Given an algorithm $A(x,t)$ where if $x \not\in L$ then $A(x,r) = 0$ $\forall r$ and if $x \in L$ then $A(x,r)=1$ for at least half the choices of $r$. \\
+
+\begin{thm}
+For suff. large $n \in \mathbb{N}$, there exists a bipartite graph $G=(L,R,E)$ s.t. $|L| = n$, $|R| = 2^{\log^2 n}$ and
+\begin{enumerate}
+\item every vertex in $R$ has deg. $\leq 12 \log^2 n$
+\item $\forall S \subseteq L, |S|=\frac{n}{2} \Rightarrow |N(S)| \geq 2^{\log^2 n} - n$
+\end{enumerate}
+\paragraph{Proof: } For each $u \in L$, rand. algo picks $d=\frac{2^{\log^2 n}(4 \log^2 n)}{n}$ neighbours in $R$ uniformly and independently at random w. replacement. This gives a bipartite graph $G=(L,R,E)$. Let $v \in R$. We wish to apply Chernoff bound, so $\mathbf{E}[\deg(v)]=nd\frac{1}{2^{log^2 n}} = 2 \log^2 n$ and
+\begin{align*}
+\mathbf{Pr}\left[ \deg(v) > 3 \cdot 3 \log^2 n \right] < \left( \frac{e}{1+\delta}\right)^{1+\delta}\mu=\left( \frac{e}{3} \right)^{12\log^2 n}
+\end{align*}
+Taking the union bound over the events yields $$\mathbf{Pr}\left[ \bigcup_{v \in R} \left\{ \deg(v) > 12 \log^2 n \right\} \right] < 2^{\log^2 n} \cdot \left(\frac{e}{3} \right)^{12 \log^2 n} \leq \frac{1}{2}$$
+Showing that the probability that condition 1 fails is at most 1/2. For condition 2:
+\begin{align*}
+\mathbf{Pr}[\text{cond. 2 fails}] &\leq \binom{n}{n/2}\left( \frac{2^{\log^2 n}}{n} \right)\left( 1- \frac{n}{2^{\log^2 n}} \right)^{\frac{dn}{2}} \\
+&\leq \left( \frac{ne}{n/2}^{n/2} \right) \left( \frac{2^{\log^2 e}}{n} \right)^n e^{-\frac{dn}{2}\frac{n}{2^{\log^2 n}}} \\
+&= (2e)^{n/2}\left( \frac{2^{\log^2 n}e}{n} \right)^n e^{-2n \log^2 n} \\
+&< \frac{1}{2}
+\end{align*}
+Finally, by union bound we get $\mathbf{Pr}[\text{cond. 1 fails or cond. 2 fails}] < \frac{1}{2} + \frac{1}{2} = 1$. Theorem follows from TPM.
+
+\end{thm}
+To amplify prob, we can, with $\log^2 n$ random bits, pick a vertex $v \in R$ uniformly at random. For each $u \in N(v)$, run $A(x,r_u)$ where $r_u$ is the index of $u$. Output $\lor_{u \in N(v)} A(x,r_u)$. This yields a failure prob. $\leq \frac{n}{2^{\log^2 n}}$
+
+
+\end{document}
